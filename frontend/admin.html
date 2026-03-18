@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TechLMS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            margin-bottom: 0.25rem;
+        }
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-md);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: var(--space-md);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><span>Tech</span>LMS <span style="font-size:0.8rem; color:var(--danger); border:1px solid var(--danger); padding:2px 6px; border-radius:4px; margin-left:8px;">Admin</span></a>
+            <div class="nav-links" id="auth-links"></div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <a href="#" class="sidebar-link active">Overview</a>
+            <a href="#" class="sidebar-link">Manage Courses</a>
+            <a href="#" class="sidebar-link">Manage Users</a>
+            <a href="dashboard.html" class="sidebar-link">Student View</a>
+            <a href="#" class="sidebar-link" onclick="logout(event)">Logout</a>
+        </aside>
+
+        <main class="dashboard-content">
+            <h1 class="mb-2">Platform Overview</h1>
+            
+            <div class="grid grid-cols-3">
+                <div class="admin-stat-card">
+                    <div class="stat-icon">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="total-users">--</div>
+                        <div class="text-muted" style="font-size: 0.875rem;">Total Users</div>
+                    </div>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="stat-icon">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="total-courses">--</div>
+                        <div class="text-muted" style="font-size: 0.875rem;">Active Courses</div>
+                    </div>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="stat-icon">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                    </div>
+                    <div>
+                        <div class="stat-value" id="total-revenue">--</div>
+                        <div class="text-muted" style="font-size: 0.875rem;">Total Enrollments</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="mt-4">Course Catalog</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Course Name</th>
+                            <th>Category</th>
+                            <th>Instructor ID</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="course-table-body">
+                        <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('lms_user'));
+            if (!user || (user.role !== 'admin' && user.role !== 'instructor')) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            try {
+                // In a real app we'd have dedicated admin endpoints
+                // For now, we simulate stats gathering using public courses data
+                const courses = await ApiService.get('/courses');
+                
+                document.getElementById('total-courses').textContent = courses.length;
+                document.getElementById('total-users').textContent = "1,204"; // Dummy stat
+                document.getElementById('total-revenue').textContent = "3,400"; // Dummy stat
+                
+                const tBody = document.getElementById('course-table-body');
+                if (courses.length > 0) {
+                    tBody.innerHTML = courses.map(c => `
+                        <tr>
+                            <td>#${c.id}</td>
+                            <td style="font-weight: 500;">${c.title}</td>
+                            <td>${c.category || 'General'}</td>
+                            <td>${c.instructor_id}</td>
+                            <td>
+                                <a href="course_detail.html?id=${c.id}" class="text-primary mr-2">View</a>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tBody.innerHTML = '<tr><td colspan="5" class="text-center">No courses found.</td></tr>';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        });
+    </script>
+</body>
+</html>

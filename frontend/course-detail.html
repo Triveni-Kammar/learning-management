@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Detail - CodeCanvas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --primary: #7b2eda;
+            --primary-dark: #5b1fa8;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --card-shadow: 0 20px 30px -10px rgba(0,0,0,0.05);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 40px;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(4px);
+            background: rgba(255,255,255,0.9);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .cart-icon {
+            margin-left: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            padding: 8px 16px;
+            background: #f1f4f9;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #cartCount {
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .cart-sidebar-overlay.active {
+            display: block;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        .cart-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: white;
+        }
+
+        .cart-item-img {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-remove {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .cart-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border);
+            background: #f8fafc;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        /* Course Detail */
+        .course-header {
+            background: #1c1d1f;
+            color: white;
+            padding: 40px 0;
+        }
+
+        .header-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            position: relative;
+        }
+
+        .course-info h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .course-description {
+            font-size: 1.1rem;
+            color: #f7f9fa;
+            margin-bottom: 20px;
+        }
+
+        .course-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+
+        .rating {
+            color: #f69c08;
+            font-weight: 700;
+        }
+
+        .stars {
+            color: #f69c08;
+            letter-spacing: 2px;
+        }
+
+        .instructor {
+            color: #c0c4fc;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Sidebar Card */
+        .course-sidebar {
+            position: absolute;
+            right: 20px;
+            top: 0;
+            width: 340px;
+            background: white;
+            border: 1px solid #d1d7dc;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .sidebar-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #1e293b;
+            cursor: pointer;
+        }
+
+        .sidebar-content {
+            padding: 24px;
+        }
+
+        .price-tag {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            cursor: default;
+        }
+
+        .includes-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .includes-list li {
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+        }
+
+        /* What you'll learn */
+        .learn-section {
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin: 40px 0;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+        }
+
+        .learn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .learn-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .learn-item i {
+            color: var(--success);
+            margin-top: 3px;
+        }
+
+        /* Syllabus */
+        .syllabus-section {
+            margin: 40px 0;
+        }
+
+        .section-box {
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 16px 24px;
+            background: #f8fafc;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .lesson-item {
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+        }
+
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-title i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        /* Video Preview Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-modal.active {
+            display: flex;
+        }
+
+        .video-container {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            background: black;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .video-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 2001;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .course-sidebar {
+                position: static;
+                width: 100%;
+                margin-top: 30px;
+            }
+            
+            .learn-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .error {
+            text-align: center;
+            padding: 50px;
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Preview Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-container">
+            <button class="video-close" onclick="closeVideoModal()">&times;</button>
+            <div class="video-wrapper">
+                <iframe id="videoIframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar-overlay" id="cartOverlay" onclick="closeCartSidebar()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Your Cart</h3>
+            <button class="close-cart" onclick="closeCartSidebar()">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 16px;"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="goToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><span>Code</span>Canvas</a>
+            <div class="nav-links" style="margin-right: auto; margin-left: 2rem;">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="courses.html">Courses</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div class="nav-links" id="auth-links">
+                    <a href="login.html">Login</a>
+                    <a href="signup.html">Sign Up</a>
+                </div>
+                <div class="cart-icon" onclick="openCartSidebar()">
+                    🛒 Cart <span id="cartCount">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="course-content-area">
+        <div class="loading">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 20px;"></i>
+            <p>Loading course details...</p>
+        </div>
+    </div>
+
+    <script>
+        // Complete course data with all new courses
+        const courseList = [
+            // Web Development Courses
+            { 
+                id: 1,
+                title: "Web Development Master Course", 
+                videoId: "Vi9bxu-M-ag", 
+                playlistId: "PLDzeHZWIZsTo0wSBcg4-NMIbC0L8evLrD",
+                category: "Web Development", 
+                rating: 4.8, 
+                students: 45200, 
+                price: 59.99,
+                description: "Complete web development master course covering HTML, CSS, JavaScript, React, Node.js and more.",
+                instructor: "CodeHelp",
+                level: "Beginner to Advanced",
+                duration: "40 hours"
+            },
+            { 
+                id: 2,
+                title: "Sigma Web Development Course", 
+                videoId: "tVzUXW6siu0", 
+                playlistId: "PLu0W_9lII9agq5TrH9XLIKQvv0iaF2X3w",
+                category: "Web Development", 
+                rating: 4.9, 
+                students: 89300, 
+                price: 69.99,
+                description: "Comprehensive web development course with modern tools and frameworks.",
+                instructor: "CodeWithHarry",
+                level: "Beginner to Advanced",
+                duration: "45 hours"
+            },
+            { 
+                id: 3,
+                title: "Complete Web Development Course", 
+                videoId: "RwPhhU7RSSs",
+                category: "Web Development", 
+                rating: 4.7, 
+                students: 34100, 
+                price: 49.99,
+                description: "Learn web development from scratch with hands-on projects.",
+                instructor: "freeCodeCamp",
+                level: "Beginner",
+                duration: "30 hours"
+            },
+            { 
+                id: 4,
+                title: "Full Stack Web Development", 
+                videoId: "gQojMIhELvM", 
+                playlistId: "PLoYCgNOIyGAB_8_iq1cL8MVeun7cB6eNc",
+                category: "Web Development", 
+                rating: 4.8, 
+                students: 56700, 
+                price: 64.99,
+                description: "Master full-stack development with MERN stack and modern practices.",
+                instructor: "LearnCode.academy",
+                level: "Intermediate",
+                duration: "35 hours"
+            },
+            { 
+                id: 5,
+                title: "Web Development for Beginners", 
+                videoId: "F4zr1aMevB4",
+                category: "Web Development", 
+                rating: 4.6, 
+                students: 28900, 
+                price: 44.99,
+                description: "Perfect starting point for absolute beginners in web development.",
+                instructor: "Traversy Media",
+                level: "Beginner",
+                duration: "25 hours"
+            },
+            { 
+                id: 6,
+                title: "MERN Stack Development", 
+                videoId: "nu_pCVPKzTk",
+                category: "Web Development", 
+                rating: 4.8, 
+                students: 41200, 
+                price: 54.99,
+                description: "Build powerful applications with MongoDB, Express, React, and Node.js.",
+                instructor: "Hitesh Choudhary",
+                level: "Intermediate",
+                duration: "32 hours"
+            },
+            { 
+                id: 7,
+                title: "JavaScript Full Course", 
+                videoId: "MkcfB7S4fq0",
+                category: "Web Development", 
+                rating: 4.9, 
+                students: 67800, 
+                price: 49.99,
+                description: "Complete JavaScript course from basics to advanced concepts.",
+                instructor: "freeCodeCamp",
+                level: "Beginner to Advanced",
+                duration: "28 hours"
+            },
+            { 
+                id: 8,
+                title: "Frontend Web Development", 
+                videoId: "RwPhhU7RSSs",
+                category: "Web Development", 
+                rating: 4.7, 
+                students: 23400, 
+                price: 44.99,
+                description: "Master frontend development with HTML, CSS, and JavaScript.",
+                instructor: "Dave Gray",
+                level: "Beginner",
+                duration: "22 hours"
+            },
+            { 
+                id: 9,
+                title: "Traversy Media Web Dev Course", 
+                videoId: "gQojMIhELvM", 
+                playlistId: "PLillGF-RfqbYeckUaD1z6nviTp31GLTH8",
+                category: "Web Development", 
+                rating: 4.8, 
+                students: 72300, 
+                price: 59.99,
+                description: "Comprehensive web development course by Traversy Media.",
+                instructor: "Brad Traversy",
+                level: "Beginner to Advanced",
+                duration: "38 hours"
+            },
+            { 
+                id: 10,
+                title: "Backend Web Development", 
+                videoId: "nu_pCVPKzTk",
+                category: "Web Development", 
+                rating: 4.7, 
+                students: 31200, 
+                price: 54.99,
+                description: "Master backend development with Node.js, Express, and databases.",
+                instructor: "The Net Ninja",
+                level: "Intermediate",
+                duration: "26 hours"
+            },
+
+            // Data Science Courses
+            { 
+                id: 11,
+                title: "Data Science Full Course", 
+                videoId: "xPh5ihBWang",
+                category: "Data Science", 
+                rating: 4.8, 
+                students: 45100, 
+                price: 69.99,
+                description: "Complete data science course covering Python, statistics, and machine learning.",
+                instructor: "edureka!",
+                level: "Beginner to Advanced",
+                duration: "42 hours"
+            },
+            { 
+                id: 12,
+                title: "Data Science for Beginners", 
+                videoId: "aGu0fbkHhek",
+                category: "Data Science", 
+                rating: 4.7, 
+                students: 28900, 
+                price: 54.99,
+                description: "Start your data science journey with this beginner-friendly course.",
+                instructor: "freeCodeCamp",
+                level: "Beginner",
+                duration: "25 hours"
+            },
+            { 
+                id: 13,
+                title: "Complete Data Science Course", 
+                videoId: "ua-CiDNNj30",
+                category: "Data Science", 
+                rating: 4.9, 
+                students: 56700, 
+                price: 79.99,
+                description: "Comprehensive data science course with real-world projects.",
+                instructor: "365 Data Science",
+                level: "Beginner to Advanced",
+                duration: "48 hours"
+            },
+            { 
+                id: 14,
+                title: "Data Science with Python", 
+                videoId: "3O-uRFt9zeI",
+                category: "Data Science", 
+                rating: 4.8, 
+                students: 33400, 
+                price: 64.99,
+                description: "Learn data science using Python and its powerful libraries.",
+                instructor: "sentdex",
+                level: "Intermediate",
+                duration: "30 hours"
+            },
+            { 
+                id: 15,
+                title: "Data Science Bootcamp", 
+                videoId: "sWhqqiJuypA",
+                category: "Data Science", 
+                rating: 4.7, 
+                students: 22300, 
+                price: 59.99,
+                description: "Intensive data science bootcamp covering all essential topics.",
+                instructor: "Data School",
+                level: "Beginner",
+                duration: "28 hours"
+            },
+            { 
+                id: 16,
+                title: "Data Science Fundamentals", 
+                videoId: "IkruZmHIPUM",
+                category: "Data Science", 
+                rating: 4.6, 
+                students: 18900, 
+                price: 49.99,
+                description: "Learn the fundamentals of data science and analytics.",
+                instructor: "Simplilearn",
+                level: "Beginner",
+                duration: "20 hours"
+            },
+            { 
+                id: 17,
+                title: "Advanced Data Science", 
+                videoId: "yoy-2kwzKd0",
+                category: "Data Science", 
+                rating: 4.8, 
+                students: 27800, 
+                price: 74.99,
+                description: "Advanced data science techniques and methodologies.",
+                instructor: "MIT OpenCourseWare",
+                level: "Advanced",
+                duration: "35 hours"
+            },
+
+            // Mobile Development Courses
+            { 
+                id: 18,
+                title: "Flutter Complete Course", 
+                videoId: "jtK3RYjEH2I",
+                category: "Mobile Development", 
+                rating: 4.8, 
+                students: 34500, 
+                price: 59.99,
+                description: "Build beautiful native apps with Flutter for iOS and Android.",
+                instructor: "freeCodeCamp",
+                level: "Beginner",
+                duration: "32 hours"
+            },
+            { 
+                id: 19,
+                title: "Android Development Course", 
+                videoId: "yye7rSsiV6k",
+                category: "Mobile Development", 
+                rating: 4.7, 
+                students: 41200, 
+                price: 64.99,
+                description: "Learn Android app development from scratch.",
+                instructor: "freeCodeCamp",
+                level: "Beginner",
+                duration: "40 hours"
+            },
+            { 
+                id: 20,
+                title: "iOS App Development", 
+                videoId: "HyU4vkZ2NB8", 
+                playlistId: "PLjVLYmrlmjGdDps6HAwOOVoAtBPAgIOXL",
+                category: "Mobile Development", 
+                rating: 4.8, 
+                students: 28900, 
+                price: 69.99,
+                description: "Build iOS apps with Swift and Xcode.",
+                instructor: "CodeWithChris",
+                level: "Beginner",
+                duration: "35 hours"
+            },
+            { 
+                id: 21,
+                title: "React Native Course", 
+                videoId: "u64gyCdqawU",
+                category: "Mobile Development", 
+                rating: 4.9, 
+                students: 37800, 
+                price: 54.99,
+                description: "Build cross-platform mobile apps with React Native.",
+                instructor: "The Net Ninja",
+                level: "Intermediate",
+                duration: "28 hours"
+            },
+            { 
+                id: 22,
+                title: "Mobile App Development", 
+                videoId: "fis26HvvDII",
+                category: "Mobile Development", 
+                rating: 4.7, 
+                students: 25600, 
+                price: 49.99,
+                description: "Complete guide to mobile app development.",
+                instructor: "Derek Banas",
+                level: "Beginner",
+                duration: "22 hours"
+            },
+            { 
+                id: 23,
+                title: "Kotlin for Android", 
+                videoId: "NMOdEHyMXBo",
+                category: "Mobile Development", 
+                rating: 4.6, 
+                students: 19800, 
+                price: 44.99,
+                description: "Learn Kotlin programming for Android development.",
+                instructor: "freeCodeCamp",
+                level: "Beginner",
+                duration: "20 hours"
+            },
+            { 
+                id: 24,
+                title: "Swift Programming", 
+                videoId: "dRa54WyIeE4",
+                category: "Mobile Development", 
+                rating: 4.7, 
+                students: 22300, 
+                price: 59.99,
+                description: "Master Swift programming for iOS development.",
+                instructor: "Stanford",
+                level: "Intermediate",
+                duration: "25 hours"
+            },
+            { 
+                id: 25,
+                title: "Cross Platform Development", 
+                videoId: "BBWyXo-3JGQ",
+                category: "Mobile Development", 
+                rating: 4.8, 
+                students: 26700, 
+                price: 54.99,
+                description: "Build apps for multiple platforms with one codebase.",
+                instructor: "Academind",
+                level: "Intermediate",
+                duration: "24 hours"
+            },
+            { 
+                id: 26,
+                title: "Mobile UI/UX Design", 
+                videoId: "lFguWR9uMD0",
+                category: "Mobile Development", 
+                rating: 4.5, 
+                students: 14500, 
+                price: 39.99,
+                description: "Design beautiful and functional mobile app interfaces.",
+                instructor: "Flux Academy",
+                level: "Beginner",
+                duration: "18 hours"
+            },
+
+            // AI & ML Courses
+            { 
+                id: 27,
+                title: "AI & Machine Learning Full Course", 
+                videoId: "ad79nYk2keg", 
+                playlistId: "PLEiEAq2VkUULyr_ftxpHB6DumOq1Zz2hq",
+                category: "AI", 
+                rating: 4.9, 
+                students: 78900, 
+                price: 89.99,
+                description: "Complete AI and machine learning course with practical projects.",
+                instructor: "Simplilearn",
+                level: "Beginner to Advanced",
+                duration: "50 hours"
+            },
+            { 
+                id: 28,
+                title: "Machine Learning for Beginners", 
+                videoId: "LvC68w9JS4Y",
+                category: "AI", 
+                rating: 4.8, 
+                students: 45600, 
+                price: 69.99,
+                description: "Introduction to machine learning concepts and algorithms.",
+                instructor: "freeCodeCamp",
+                level: "Beginner",
+                duration: "25 hours"
+            },
+            { 
+                id: 29,
+                title: "Deep Learning Course", 
+                videoId: "1L420xXpDTg", 
+                playlistId: "PLaldQ9PzZd9qT0KsKJ7yCq70iFFP3MFJ5",
+                category: "AI", 
+                rating: 4.8, 
+                students: 33400, 
+                price: 79.99,
+                description: "Master deep learning with neural networks and TensorFlow.",
+                instructor: "DeepLearning.AI",
+                level: "Intermediate",
+                duration: "32 hours"
+            },
+            { 
+                id: 30,
+                title: "AI for Everyone", 
+                videoId: "KpiSRshpIy0",
+                category: "AI", 
+                rating: 4.7, 
+                students: 56700, 
+                price: 49.99,
+                description: "Non-technical introduction to artificial intelligence.",
+                instructor: "Andrew Ng",
+                level: "Beginner",
+                duration: "15 hours"
+            },
+            { 
+                id: 31,
+                title: "Complete AI Course", 
+                videoId: "1Qm_RgejEHg",
+                category: "AI", 
+                rating: 4.9, 
+                students: 62300, 
+                price: 94.99,
+                description: "Comprehensive AI course covering all major concepts.",
+                instructor: "Great Learning",
+                level: "Beginner to Advanced",
+                duration: "45 hours"
+            },
+            { 
+                id: 32,
+                title: "Machine Learning A-Z", 
+                videoId: "Mo9nBd1Qqyg",
+                category: "AI", 
+                rating: 4.8, 
+                students: 44500, 
+                price: 74.99,
+                description: "Hands-on machine learning course with Python.",
+                instructor: "SuperDataScience",
+                level: "Beginner",
+                duration: "38 hours"
+            },
+            { 
+                id: 33,
+                title: "AI & ML Full Course 2026", 
+                videoId: "hhGPiDrUe1c",
+                category: "AI", 
+                rating: 4.9, 
+                students: 81500, 
+                price: 99.99,
+                description: "Cutting-edge AI and ML concepts for 2026 and beyond.",
+                instructor: "Edureka",
+                level: "Advanced",
+                duration: "42 hours"
+            },
+            { 
+                id: 34,
+                title: "Neural Networks Course", 
+                videoId: "ie4oGI85SAE",
+                category: "AI", 
+                rating: 4.7, 
+                students: 26700, 
+                price: 69.99,
+                description: "Deep dive into neural networks and deep learning.",
+                instructor: "3Blue1Brown",
+                level: "Intermediate",
+                duration: "20 hours"
+            },
+            { 
+                id: 35,
+                title: "Python for AI & ML", 
+                videoId: "EHBNe31y65s",
+                category: "AI", 
+                rating: 4.8, 
+                students: 37800, 
+                price: 59.99,
+                description: "Learn Python specifically for AI and machine learning.",
+                instructor: "Corey Schafer",
+                level: "Beginner",
+                duration: "28 hours"
+            },
+            { 
+                id: 36,
+                title: "TensorFlow Course", 
+                videoId: "GwIo3gDZCVQ",
+                category: "AI", 
+                rating: 4.7, 
+                students: 22300, 
+                price: 64.99,
+                description: "Master TensorFlow for deep learning applications.",
+                instructor: "TensorFlow",
+                level: "Intermediate",
+                duration: "22 hours"
+            },
+            { 
+                id: 37,
+                title: "AI Programming", 
+                videoId: "yiXAmkimZRQ",
+                category: "AI", 
+                rating: 4.6, 
+                students: 18900, 
+                price: 54.99,
+                description: "Practical AI programming with real-world applications.",
+                instructor: "sentdex",
+                level: "Intermediate",
+                duration: "24 hours"
+            },
+
+            // DSA Courses
+            { 
+                id: 38,
+                title: "Complete DSA Course", 
+                videoId: "BBpAmxU_NQo",
+                category: "DSA", 
+                rating: 4.9, 
+                students: 92300, 
+                price: 79.99,
+                description: "Complete data structures and algorithms course.",
+                instructor: "freeCodeCamp",
+                level: "Beginner to Advanced",
+                duration: "35 hours"
+            },
+            { 
+                id: 39,
+                title: "Data Structures & Algorithms", 
+                videoId: "5_5oE5lgrhw", 
+                playlistId: "PLu0W_9lII9ahIappRPN0MCAgtOu3lQjQi",
+                category: "DSA", 
+                rating: 4.9, 
+                students: 112300, 
+                price: 84.99,
+                description: "Comprehensive DSA course with implementation in multiple languages.",
+                instructor: "CodeWithHarry",
+                level: "Beginner to Advanced",
+                duration: "40 hours"
+            },
+            { 
+                id: 40,
+                title: "DSA with C++", 
+                videoId: "AT14lCXuMKI", 
+                playlistId: "PLdo5W4Nhv31bbKJzrsKfMpo_grxuLl8LU",
+                category: "DSA", 
+                rating: 4.8, 
+                students: 67800, 
+                price: 69.99,
+                description: "Master DSA with C++ programming language.",
+                instructor: "Jenny's Lectures",
+                level: "Intermediate",
+                duration: "32 hours"
+            },
+            { 
+                id: 41,
+                title: "DSA with Java", 
+                videoId: "VTLCoHnyACE", 
+                playlistId: "PLfqMhTWNBTe137I_EPQd34TsgV6IO55pt",
+                category: "DSA", 
+                rating: 4.8, 
+                students: 58900, 
+                price: 69.99,
+                description: "Learn DSA concepts using Java programming.",
+                instructor: "Apna College",
+                level: "Intermediate",
+                duration: "30 hours"
+            },
+            { 
+                id: 42,
+                title: "Algorithms Course", 
+                videoId: "xwI5OBEnsZU",
+                category: "DSA", 
+                rating: 4.7, 
+                students: 33400, 
+                price: 59.99,
+                description: "In-depth algorithms course for competitive programming.",
+                instructor: "MIT OpenCourseWare",
+                level: "Advanced",
+                duration: "28 hours"
+            },
+            { 
+                id: 43,
+                title: "Data Structures Course", 
+                videoId: "mGJusQ7iBwc",
+                category: "DSA", 
+                rating: 4.8, 
+                students: 44500, 
+                price: 64.99,
+                description: "Comprehensive data structures course with implementations.",
+                instructor: "freeCodeCamp",
+                level: "Beginner",
+                duration: "25 hours"
+            },
+            { 
+                id: 44,
+                title: "Advanced DSA", 
+                videoId: "8hly31xKli0",
+                category: "DSA", 
+                rating: 4.8, 
+                students: 28900, 
+                price: 74.99,
+                description: "Advanced data structures and algorithms for experts.",
+                instructor: "takeUforward",
+                level: "Advanced",
+                duration: "30 hours"
+            },
+            { 
+                id: 45,
+                title: "DSA for Interviews", 
+                videoId: "6iCHf7OZn6c", 
+                playlistId: "PL6Zs6LgrJj3tDXv8a_elC6eT_4R5gfX4d",
+                category: "DSA", 
+                rating: 4.9, 
+                students: 56700, 
+                price: 69.99,
+                description: "Crack coding interviews with DSA mastery.",
+                instructor: "Dinesh Varyani",
+                level: "Intermediate",
+                duration: "28 hours"
+            },
+            { 
+                id: 46,
+                title: "Algorithm Analysis", 
+                videoId: "VCePvdTel64",
+                category: "DSA", 
+                rating: 4.6, 
+                students: 17800, 
+                price: 49.99,
+                description: "Learn algorithm analysis and complexity theory.",
+                instructor: "MIT OpenCourseWare",
+                level: "Advanced",
+                duration: "20 hours"
+            },
+            { 
+                id: 47,
+                title: "Competitive Programming DSA", 
+                videoId: "cOSTc6qBRQw",
+                category: "DSA", 
+                rating: 4.7, 
+                students: 23400, 
+                price: 59.99,
+                description: "Master DSA for competitive programming contests.",
+                instructor: "Errichto",
+                level: "Advanced",
+                duration: "24 hours"
+            },
+            { 
+                id: 48,
+                title: "DSA Master Course", 
+                videoId: "MdG0Vw9f1A4", 
+                playlistId: "PLmXKhU9FNesRRy20Hjr2GuQ7Y6wevfsc5",
+                category: "DSA", 
+                rating: 4.8, 
+                students: 37800, 
+                price: 69.99,
+                description: "Complete DSA master course with 400+ problems.",
+                instructor: "CodeHelp",
+                level: "Beginner to Advanced",
+                duration: "45 hours"
+            },
+            { 
+                id: 49,
+                title: "DSA Complete Guide", 
+                videoId: "f9Aje_cN_CY",
+                category: "DSA", 
+                rating: 4.8, 
+                students: 41200, 
+                price: 64.99,
+                description: "Your complete guide to data structures and algorithms.",
+                instructor: "Bro Code",
+                level: "Beginner",
+                duration: "22 hours"
+            },
+            { 
+                id: 50,
+                title: "HTML Tutorial – Website Crash Course", 
+                videoId: "916GWv2Qs08", 
+                category: "Web Development", 
+                rating: 4.6, 
+                students: 38100, 
+                price: 39.99,
+                description: "Learn HTML from scratch and build your first website today!",
+                instructor: "Emma Davis",
+                level: "Beginner",
+                duration: "8 hours"
+            },
+            { 
+                id: 51,
+                title: "Python for Beginners – Full Course", 
+                videoId: "eWRfhZUzrAc", 
+                category: "Programming", 
+                rating: 4.9, 
+                students: 120300, 
+                price: 69.99,
+                description: "Complete Python programming course from basics to advanced concepts.",
+                instructor: "John Smith",
+                level: "Beginner",
+                duration: "30 hours"
+            },
+            { 
+                id: 52,
+                title: "SQL Tutorial for Beginners", 
+                videoId: "yE6tIle64tU", 
+                category: "Data", 
+                rating: 4.8, 
+                students: 69400, 
+                price: 44.99,
+                description: "Master SQL and database management with MySQL.",
+                instructor: "Lisa Wong",
+                level: "Beginner",
+                duration: "12 hours"
+            },
+            { 
+                id: 53,
+                title: "Microsoft Excel Complete Course", 
+                videoId: "FtQk_tPnD4I", 
+                category: "Data", 
+                rating: 4.8, 
+                students: 93200, 
+                price: 34.99,
+                description: "Become an Excel pro with this comprehensive course.",
+                instructor: "David Miller",
+                level: "All Levels",
+                duration: "18 hours"
+            },
+            { 
+                id: 54,
+                title: "Cyber Security Full Course", 
+                videoId: "v3iUx2SNspY", 
+                category: "Cyber Security", 
+                rating: 4.7, 
+                students: 27800, 
+                price: 89.99,
+                description: "Learn cybersecurity fundamentals and protect against modern threats.",
+                instructor: "Alex Rivera",
+                level: "Beginner",
+                duration: "22 hours"
+            },
+            { 
+                id: 55,
+                title: "Introduction to Ethical Hacking", 
+                videoId: "36LLmekdjAQ", 
+                category: "Cyber Security", 
+                rating: 4.6, 
+                students: 22100, 
+                price: 79.99,
+                description: "Learn ethical hacking techniques and penetration testing.",
+                instructor: "Chris Martin",
+                level: "Intermediate",
+                duration: "16 hours"
+            },
+            { 
+                id: 56,
+                title: "Java Introduction Course", 
+                videoId: "bm0OyhwFDuY", 
+                category: "Programming", 
+                rating: 4.5, 
+                students: 30400, 
+                price: 54.99,
+                description: "Start your Java programming journey with this beginner-friendly course.",
+                instructor: "James Wilson",
+                level: "Beginner",
+                duration: "14 hours"
+            }
+        ];
+
+        // Video Modal Functions
+        function openVideoModal(videoId, playlistId) {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            if (playlistId) {
+                iframe.src = `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=1`;
+            } else {
+                iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            }
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            iframe.src = '';
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cart functions
+        function openCartSidebar() {
+            document.getElementById('cartSidebar').classList.add('open');
+            document.getElementById('cartOverlay').classList.add('active');
+            displayCartItems();
+        }
+
+        function closeCartSidebar() {
+            document.getElementById('cartSidebar').classList.remove('open');
+            document.getElementById('cartOverlay').classList.remove('active');
+        }
+
+        function displayCartItems() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartItems = document.getElementById('cartItems');
+            const cartFooter = document.getElementById('cartFooter');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+                cartFooter.style.display = 'none';
+                return;
+            }
+
+            let total = 0;
+            let itemsHtml = '';
+            
+            cart.forEach(item => {
+                total += item.price || 49.99;
+                itemsHtml += `
+                    <div class="cart-item">
+                        <img src="https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg" alt="${item.title}" class="cart-item-img">
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${item.title.substring(0, 40)}${item.title.length > 40 ? '...' : ''}</div>
+                            <div class="cart-item-price">$${(item.price || 49.99).toFixed(2)}</div>
+                            <span class="cart-item-remove" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i> Remove</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cartItems.innerHTML = itemsHtml;
+            document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+            cartFooter.style.display = 'block';
+        }
+
+        function removeFromCart(courseId) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart = cart.filter(item => item.id !== courseId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            displayCartItems();
+            updateButtonState(courseId);
+        }
+
+        function addToCart(courseId) {
+            const user = localStorage.getItem('lms_user');
+            if (!user) {
+                alert("Please log in to add courses to cart");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const course = courseList.find(c => c.id === courseId);
+            if (!course) return;
+
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (!cart.some(item => item.id === courseId)) {
+                cart.push(course);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                displayCartItems();
+                updateButtonState(courseId);
+                alert('Course added to cart!');
+            }
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            document.getElementById('cartCount').textContent = cart.length;
+        }
+
+        function isInCart(courseId) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            return cart.some(item => item.id === courseId);
+        }
+
+        function updateButtonState(courseId) {
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            if (addToCartBtn) {
+                if (isInCart(courseId)) {
+                    addToCartBtn.innerHTML = '<i class="fas fa-check"></i> Added to Cart';
+                    addToCartBtn.classList.remove('btn-primary');
+                    addToCartBtn.classList.add('btn-success');
+                    addToCartBtn.onclick = () => openCartSidebar();
+                } else {
+                    addToCartBtn.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+                    addToCartBtn.classList.remove('btn-success');
+                    addToCartBtn.classList.add('btn-primary');
+                    addToCartBtn.onclick = () => addToCart(courseId);
+                }
+            }
+        }
+
+        function goToCheckout() {
+            window.location.href = 'checkout.html';
+        }
+
+        // Load course details
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = parseInt(urlParams.get('id')) || 1;
+            
+            // Find course
+            const course = courseList.find(c => c.id === courseId);
+            
+            if (!course) {
+                document.getElementById('course-content-area').innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                        <h2>Course not found</h2>
+                        <p>The course you're looking for doesn't exist.</p>
+                        <a href="courses.html" class="btn btn-primary" style="display: inline-block; width: auto; margin-top: 20px;">Browse Courses</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Generate stars
+            const fullStars = Math.floor(course.rating);
+            const stars = '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
+            
+            // Create syllabus sections
+            const sections = [
+                {
+                    title: "Getting Started",
+                    lessons: [
+                        { title: "Course Introduction", duration: 15 },
+                        { title: "Setting Up Your Environment", duration: 25 },
+                        { title: "Basic Concepts", duration: 30 }
+                    ]
+                },
+                {
+                    title: "Core Concepts",
+                    lessons: [
+                        { title: "Fundamentals Part 1", duration: 20 },
+                        { title: "Fundamentals Part 2", duration: 35 },
+                        { title: "Practice Exercises", duration: 25 }
+                    ]
+                },
+                {
+                    title: "Advanced Topics",
+                    lessons: [
+                        { title: "Advanced Techniques", duration: 40 },
+                        { title: "Real-world Projects", duration: 45 },
+                        { title: "Final Assessment", duration: 30 }
+                    ]
+                }
+            ];
+
+            let totalLessons = 0;
+            sections.forEach(s => totalLessons += s.lessons.length);
+
+            // Check if user is logged in
+            const user = localStorage.getItem('lms_user');
+            if (user) {
+                document.getElementById('auth-links').innerHTML = `
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                `;
+            }
+
+            // Render course details
+            document.getElementById('course-content-area').innerHTML = `
+                <div class="course-header">
+                    <div class="container">
+                        <div class="header-grid">
+                            <!-- Left content -->
+                            <div class="course-info">
+                                <div style="color: #c0c4fc; font-weight: 700; margin-bottom: 15px;">
+                                    ${course.category}
+                                </div>
+                                <h1>${course.title}</h1>
+                                <p class="course-description">${course.description}</p>
+                                
+                                <div class="course-meta">
+                                    <span class="rating">${course.rating}</span>
+                                    <span class="stars">${stars}</span>
+                                    <span>(${(course.students).toLocaleString()} students)</span>
+                                </div>
+                                
+                                <div style="margin: 20px 0;">
+                                    Created by <span class="instructor">${course.instructor}</span>
+                                </div>
+                                
+                                <div style="display: flex; gap: 30px;">
+                                    <span><i class="far fa-clock"></i> Last updated 1/2026</span>
+                                    <span><i class="fas fa-globe"></i> English</span>
+                                    <span><i class="fas fa-signal"></i> ${course.level}</span>
+                                </div>
+                            </div>
+
+                            <!-- Sidebar -->
+                            <div class="course-sidebar">
+                                <img src="https://img.youtube.com/vi/${course.videoId}/maxresdefault.jpg" 
+                                     class="sidebar-image" 
+                                     onclick="openVideoModal('${course.videoId}', '${course.playlistId || ''}')"
+                                     onerror="this.src='https://img.youtube.com/vi/${course.videoId}/hqdefault.jpg'"
+                                     alt="${course.title}">
+                                
+                                <div class="sidebar-content">
+                                    <div class="price-tag">$${course.price}</div>
+                                    
+                                    <button class="btn btn-primary" id="addToCartBtn">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                    
+                                    <button class="btn btn-outline" onclick="openVideoModal('${course.videoId}', '${course.playlistId || ''}')">
+                                        <i class="fas fa-play"></i> Preview
+                                    </button>
+
+                                    <h4 style="margin: 20px 0 10px;">This course includes:</h4>
+                                    <ul class="includes-list">
+                                        <li><i class="fas fa-video"></i> ${course.duration} on-demand video</li>
+                                        <li><i class="fas fa-file"></i> 50+ articles</li>
+                                        <li><i class="fas fa-download"></i> 30 downloadable resources</li>
+                                        <li><i class="fas fa-certificate"></i> Certificate of completion</li>
+                                        <li><i class="fas fa-infinity"></i> Full lifetime access</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <!-- What you'll learn -->
+                    <div class="learn-section">
+                        <h2>What you'll learn</h2>
+                        <div class="learn-grid">
+                            <div class="learn-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Master ${course.category} fundamentals and advanced concepts</span>
+                            </div>
+                            <div class="learn-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Build real-world projects and applications</span>
+                            </div>
+                            <div class="learn-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Understand best practices and industry standards</span>
+                            </div>
+                            <div class="learn-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Prepare for technical interviews</span>
+                            </div>
+                            <div class="learn-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Get hands-on experience with practical exercises</span>
+                            </div>
+                            <div class="learn-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Earn a certificate of completion</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Syllabus -->
+                    <div class="syllabus-section">
+                        <h2 style="margin-bottom: 20px;">Course content</h2>
+                        <div style="margin-bottom: 15px; color: var(--text-muted);">
+                            ${sections.length} sections • ${totalLessons} lectures • ${totalLessons * 15} minutes total length
+                        </div>
+                        
+                        ${sections.map((section, idx) => `
+                            <div class="section-box">
+                                <div class="section-header">
+                                    <span>${section.title}</span>
+                                    <span>${section.lessons.length} lectures • ${section.lessons.length * 15} min</span>
+                                </div>
+                                <div>
+                                    ${section.lessons.map(lesson => `
+                                        <div class="lesson-item">
+                                            <span class="lesson-title">
+                                                <i class="fas fa-play-circle"></i> ${lesson.title}
+                                            </span>
+                                            <span>${lesson.duration}:00</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Update button state based on cart
+            updateButtonState(courseId);
+            updateCartCount();
+
+            // Add to cart functionality
+            window.addToCart = addToCart;
+        });
+
+        // Logout function
+        window.logout = function() {
+            localStorage.removeItem('lms_user');
+            localStorage.removeItem('access_token');
+            window.location.href = 'index.html';
+        };
+
+        // Initialize cart count
+        updateCartCount();
+
+        // Click outside to close sidebar
+        document.getElementById('cartOverlay').addEventListener('click', closeCartSidebar);
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeVideoModal();
+                closeCartSidebar();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCanvas · Courses</title>
+    <!-- Font Awesome for star icons & search icon (clean) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ALL YOUR EXISTING STYLES REMAIN EXACTLY THE SAME */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --primary: #7b2eda;
+            --primary-dark: #5b1fa8;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #e2e8f0;
+            --card-shadow: 0 20px 30px -10px rgba(0,0,0,0.05), 0 8px 15px -6px rgba(0,0,0,0.1);
+            --hover-shadow: 0 30px 40px -15px rgba(123,46,218,0.2);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 40px;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* navbar */
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(4px);
+            background: rgba(255,255,255,0.9);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.7rem;
+            font-weight: 800;
+            text-decoration: none;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            margin-left: 40px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: 0.15s;
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        .cart-icon {
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            background: #f1f4f9;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cart-icon i { font-size: 1.1rem; color: var(--primary); }
+        #cartCount {
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            padding: 2px 9px;
+            font-size: 0.75rem;
+            margin-left: 5px;
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .cart-sidebar-overlay.active {
+            display: block;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        .cart-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: white;
+        }
+
+        .cart-item-img {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .cart-item-category {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .cart-item-price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .cart-item-remove {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .cart-item-remove:hover {
+            text-decoration: underline;
+        }
+
+        .cart-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border);
+            background: #f8fafc;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkout-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-cart i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            color: var(--border);
+        }
+
+        /* Subscription Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .subscription-modal {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .subscription-plans {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .plan-card {
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .plan-card.selected {
+            border-color: var(--primary);
+            background: #f3e8ff;
+        }
+
+        .plan-card h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .plan-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .plan-price span {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .plan-features i {
+            color: #10b981;
+            font-size: 0.9rem;
+        }
+
+        .payment-section {
+            margin: 24px 0;
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .payment-method {
+            flex: 1;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .payment-method.selected {
+            border-color: var(--primary);
+            background: #f3e8ff;
+        }
+
+        .payment-method i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .payment-method span {
+            display: block;
+            font-weight: 500;
+        }
+
+        .payment-form {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .total-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .total-price .amount {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .subscribe-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .subscribe-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .secure-badge i {
+            color: #10b981;
+        }
+
+        /* Page header + search/filter */
+        .courses-header {
+            padding: 40px 0 20px;
+        }
+        .courses-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .subhead {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .search-filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin: 30px 0 20px;
+        }
+        .search-wrapper {
+            flex: 2;
+            min-width: 260px;
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 60px;
+            padding: 4px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .search-wrapper i {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-right: 12px;
+        }
+        .search-wrapper input {
+            border: none;
+            padding: 14px 0;
+            width: 100%;
+            font-size: 1rem;
+            background: transparent;
+            outline: none;
+        }
+
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            flex: 3;
+            justify-content: flex-end;
+        }
+        .filter-chip {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 10px 22px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            font-size: 0.95rem;
+        }
+        .filter-chip.active, .filter-chip:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* course grid */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+            margin: 40px 0 80px;
+        }
+
+        .course-card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--hover-shadow);
+            border-color: #d9c9ff;
+        }
+
+        .thumbnail {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #1e293b;
+            overflow: hidden;
+        }
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .course-card:hover .thumbnail img {
+            transform: scale(1.03);
+        }
+
+        .card-content {
+            padding: 18px 16px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .category-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: #ede9fe;
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            align-self: flex-start;
+        }
+        .course-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .rating-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0 14px;
+            font-size: 0.9rem;
+        }
+        .stars {
+            color: #f4b740;
+            letter-spacing: 2px;
+            font-size: 1rem;
+        }
+        .rating-number {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .rating-count {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* NEW: Price display */
+        .course-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 8px 0 12px;
+        }
+        .course-price small {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 12px;
+        }
+        .btn {
+            flex: 1;
+            padding: 10px 0;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 1px solid transparent;
+        }
+        .btn-cart {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+        .btn-cart:hover {
+            background: #f1f5f9;
+            border-color: var(--text-muted);
+        }
+        .btn-cart.in-cart {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        .btn-cart.in-cart:hover {
+            background: #0e9f6e;
+        }
+        .btn-subscribe {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 6px 14px rgba(123,46,218,0.25);
+        }
+        .btn-subscribe:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        /* NEW: Enroll button */
+        .btn-enroll {
+            background: #22c55e;
+            color: white;
+            width: 100%;
+            margin-top: 8px;
+            padding: 12px 0;
+            font-size: 1rem;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-enroll:hover {
+            background: #16a34a;
+            transform: scale(1.02);
+        }
+        .btn-enroll i {
+            font-size: 1rem;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        /* responsive */
+        @media (max-width: 700px) {
+            .search-filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .category-filters {
+                justify-content: flex-start;
+            }
+            .cart-sidebar {
+                width: 100%;
+            }
+        }
+
+        .loader-placeholder {
+            text-align: center;
+            padding: 50px;
+        }
+
+        /* Cart Notification */
+        .cart-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .cart-notification i {
+            font-size: 1.2rem;
+        }
+
+        .cart-notification button {
+            background: white;
+            color: #10b981;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 12px;
+            transition: all 0.2s;
+        }
+
+        .cart-notification button:hover {
+            background: #f0fdf4;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar-overlay" id="cartOverlay" onclick="closeCartSidebar()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Your Cart</h3>
+            <button class="close-cart" onclick="closeCartSidebar()">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be dynamically inserted here -->
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="goToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Cart Notification -->
+    <div class="cart-notification" id="cartNotification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationMessage">Course added to cart!</span>
+        <button onclick="openCartSidebar()">View Cart</button>
+    </div>
+
+    <!-- Subscription Modal -->
+    <div class="modal-overlay" id="subscriptionModal">
+        <div class="subscription-modal">
+            <div class="modal-header">
+                <h3>Choose Your Subscription</h3>
+                <button class="close-modal" onclick="closeSubscriptionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="subscription-plans" id="subscriptionPlans">
+                    <div class="plan-card selected" onclick="selectPlan('monthly')" id="monthlyPlan">
+                        <h4>Monthly Subscription</h4>
+                        <div class="plan-price">₹500 <span>/month</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Access to all courses</li>
+                            <li><i class="fas fa-check"></i> Cancel anytime</li>
+                            <li><i class="fas fa-check"></i> Certificate of completion</li>
+                        </ul>
+                    </div>
+                    <div class="plan-card" onclick="selectPlan('yearly')" id="yearlyPlan">
+                        <h4>Yearly Subscription</h4>
+                        <div class="plan-price">₹4,800 <span>/year</span></div>
+                        <div style="color: #10b981; font-size: 0.9rem; margin-bottom: 8px;">Save 20%</div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Everything in Monthly</li>
+                            <li><i class="fas fa-check"></i> 2 months free</li>
+                            <li><i class="fas fa-check"></i> Priority support</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="payment-section">
+                    <h4 style="margin-bottom: 16px;">Payment Details</h4>
+                    <div class="payment-methods">
+                        <div class="payment-method selected" onclick="selectPaymentMethod('card')" id="cardMethod">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Card</span>
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('upi')" id="upiMethod">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>UPI</span>
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('netbanking')" id="netbankingMethod">
+                            <i class="fas fa-university"></i>
+                            <span>NetBanking</span>
+                        </div>
+                    </div>
+
+                    <div class="payment-form" id="cardForm">
+                        <div class="form-group">
+                            <label>Card Number</label>
+                            <input type="text" placeholder="1234 5678 9012 3456" id="cardNumber" maxlength="19">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Expiry</label>
+                                <input type="text" placeholder="MM/YY" id="expiry" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="password" placeholder="***" id="cvv" maxlength="3">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Cardholder Name</label>
+                            <input type="text" placeholder="John Doe" id="cardholderName">
+                        </div>
+                    </div>
+
+                    <div class="payment-form" id="upiForm" style="display: none;">
+                        <div class="form-group">
+                            <label>UPI ID</label>
+                            <input type="text" placeholder="yourname@okhdfcbank" id="upiId">
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile Number</label>
+                            <input type="tel" placeholder="9876543210" id="upiMobile" maxlength="10">
+                        </div>
+                    </div>
+
+                    <div class="payment-form" id="netbankingForm" style="display: none;">
+                        <div class="form-group">
+                            <label>Select Bank</label>
+                            <select id="bankSelect">
+                                <option value="sbi">State Bank of India</option>
+                                <option value="hdfc">HDFC Bank</option>
+                                <option value="icici">ICICI Bank</option>
+                                <option value="axis">Axis Bank</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Account Number</label>
+                            <input type="text" placeholder="Enter account number" id="accountNumber">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="total-price">
+                    <span>Total (including GST)</span>
+                    <span class="amount" id="totalAmount">₹590</span>
+                </div>
+
+                <button class="subscribe-btn" onclick="processSubscription()">
+                    <i class="fas fa-lock"></i> Subscribe Now
+                </button>
+                <div class="secure-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Your payment information is encrypted and secure</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><span>Code</span>Canvas</a>
+            <div class="nav-links" style="margin-right: auto;">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="courses.html">Courses</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="nav-links" id="auth-links">
+                    <a href="login.html">Login</a>
+                    <a href="signup.html">Sign Up</a>
+                </div>
+                <div class="cart-icon" onclick="openCartSidebar()">
+                    <i class="fas fa-shopping-cart"></i> Cart <span id="cartCount">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="courses-header">
+            <h1>Expand your skills </h1>
+            <div class="subhead">50+ technical courses that actually teach you</div>
+        </div>
+
+        <!-- search & filters -->
+        <div class="search-filter-row">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search courses..." autocomplete="off">
+            </div>
+            <div class="category-filters" id="categoryFilters">
+                <span class="filter-chip active" data-category="all">All</span>
+                <span class="filter-chip" data-category="Web Development">Web Dev</span>
+                <span class="filter-chip" data-category="Data Science">Data Science</span>
+                <span class="filter-chip" data-category="Mobile Development">Mobile Dev</span>
+                <span class="filter-chip" data-category="AI">AI & ML</span>
+                <span class="filter-chip" data-category="DSA">DSA</span>
+            </div>
+        </div>
+
+        <!-- course grid injected via js -->
+        <div id="coursesGrid" class="course-grid">
+            <!-- dynamic cards appear here -->
+            <div class="loader-placeholder">🎯 loading courses ...</div>
+        </div>
+    </main>
+
+    <script>
+        let currentSelectedCourse = null;
+        let selectedPlan = 'monthly';
+        let selectedPaymentMethod = 'card';
+
+        // Cart Sidebar Functions
+        function openCartSidebar() {
+            document.getElementById('cartSidebar').classList.add('open');
+            document.getElementById('cartOverlay').classList.add('active');
+            displayCartItems();
+        }
+
+        function closeCartSidebar() {
+            document.getElementById('cartSidebar').classList.remove('open');
+            document.getElementById('cartOverlay').classList.remove('active');
+        }
+
+        function displayCartItems() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartItems = document.getElementById('cartItems');
+            const cartFooter = document.getElementById('cartFooter');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Your cart is empty</p>
+                        <p style="font-size: 0.9rem; margin-top: 8px;">Browse courses and add them to cart</p>
+                    </div>
+                `;
+                cartFooter.style.display = 'none';
+                return;
+            }
+
+            let total = 0;
+            let itemsHtml = '';
+            
+            cart.forEach(item => {
+                const price = typeof item.price === 'number' ? item.price : 49.99;
+                total += price;
+                
+                itemsHtml += `
+                    <div class="cart-item">
+                        <img src="${item.thumbnail}" alt="${item.title}" class="cart-item-img" onerror="this.src='https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg'">
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${item.title.substring(0, 40)}${item.title.length > 40 ? '...' : ''}</div>
+                            <div class="cart-item-category">${item.category} • ${item.purchaseType === 'subscription' ? 'Subscription' : 'One-time'}</div>
+                            <div class="cart-item-price">$${price.toFixed(2)}</div>
+                            <span class="cart-item-remove" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i> Remove</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cartItems.innerHTML = itemsHtml;
+            document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+            cartFooter.style.display = 'block';
+        }
+
+        function removeFromCart(courseId) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart = cart.filter(item => item.id !== courseId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            displayCartItems();
+            renderCourses(activeCategory, currentSearch);
+            showNotification('Course removed from cart');
+        }
+
+        function goToCheckout() {
+            window.location.href = 'checkout.html';
+        }
+
+        // Modal functions
+        function openSubscriptionModal(courseId) {
+            currentSelectedCourse = courseId;
+            document.getElementById('subscriptionModal').classList.add('active');
+        }
+
+        function closeSubscriptionModal() {
+            document.getElementById('subscriptionModal').classList.remove('active');
+        }
+
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById(plan + 'Plan').classList.add('selected');
+            
+            const totalAmount = plan === 'monthly' ? '₹590' : '₹5,664';
+            document.getElementById('totalAmount').textContent = totalAmount;
+        }
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+            document.getElementById(method + 'Method').classList.add('selected');
+            
+            // Show/hide payment forms
+            document.getElementById('cardForm').style.display = method === 'card' ? 'block' : 'none';
+            document.getElementById('upiForm').style.display = method === 'upi' ? 'block' : 'none';
+            document.getElementById('netbankingForm').style.display = method === 'netbanking' ? 'block' : 'none';
+        }
+
+        function validatePaymentForm() {
+            if (selectedPaymentMethod === 'card') {
+                const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                const expiry = document.getElementById('expiry').value;
+                const cvv = document.getElementById('cvv').value;
+                const name = document.getElementById('cardholderName').value;
+                
+                if (cardNumber.length < 16) {
+                    alert('Please enter a valid 16-digit card number');
+                    return false;
+                }
+                if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+                    alert('Please enter a valid expiry date (MM/YY)');
+                    return false;
+                }
+                if (cvv.length < 3) {
+                    alert('Please enter a valid CVV');
+                    return false;
+                }
+                if (name.trim().length < 3) {
+                    alert('Please enter cardholder name');
+                    return false;
+                }
+            } else if (selectedPaymentMethod === 'upi') {
+                const upi = document.getElementById('upiId').value;
+                const mobile = document.getElementById('upiMobile').value;
+                
+                if (!upi.includes('@') || upi.length < 6) {
+                    alert('Please enter a valid UPI ID');
+                    return false;
+                }
+                if (mobile.length !== 10) {
+                    alert('Please enter a valid 10-digit mobile number');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function processSubscription() {
+            if (!validatePaymentForm()) {
+                return;
+            }
+
+            // Simulate payment processing
+            const subscribeBtn = document.querySelector('.subscribe-btn');
+            const originalText = subscribeBtn.innerHTML;
+            subscribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            subscribeBtn.disabled = true;
+
+            setTimeout(() => {
+                // Add course to cart after successful subscription
+                const course = courses.find(c => c.id === currentSelectedCourse);
+                if (course) {
+                    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    if (!cart.some(item => item.id === course.id)) {
+                        cart.push({
+                            ...course,
+                            purchaseType: 'subscription',
+                            plan: selectedPlan,
+                            price: selectedPlan === 'monthly' ? 49.99 : 479.99 // Example prices
+                        });
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        updateCartCount();
+                        showNotification('Course added to cart with subscription!');
+                        renderCourses(activeCategory, currentSearch);
+                    }
+                }
+
+                closeSubscriptionModal();
+                subscribeBtn.innerHTML = originalText;
+                subscribeBtn.disabled = false;
+            }, 2000);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('cartNotification');
+            document.getElementById('notificationMessage').textContent = message;
+            notification.style.display = 'flex';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const countEl = document.getElementById('cartCount');
+            if (countEl) {
+                countEl.textContent = cart.length;
+            }
+        }
+
+        // NEW: Enroll function - redirects to course detail page
+        function enrollCourse(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (course) {
+                // Store the selected course in sessionStorage for the detail page
+                sessionStorage.setItem('selectedCourse', JSON.stringify(course));
+                // Redirect to course detail page
+                window.location.href = `course-detail.html?id=${courseId}`;
+            }
+        }
+
+        // ----- COMPLETE COURSE DATA WITH ALL NEW COURSES -----
+        const courseList = [
+            // Web Development Courses
+            { title: "Web Development Master Course (Complete)", videoId: "Vi9bxu-M-ag", playlistId: "PLDzeHZWIZsTo0wSBcg4-NMIbC0L8evLrD", category: "Web Development", rating: 4.8, students: 45200, price: 59.99 },
+            { title: "Sigma Web Development Course", videoId: "tVzUXW6siu0", playlistId: "PLu0W_9lII9agq5TrH9XLIKQvv0iaF2X3w", category: "Web Development", rating: 4.9, students: 89300, price: 69.99 },
+            { title: "Complete Web Development Course", videoId: "RwPhhU7RSSs", category: "Web Development", rating: 4.7, students: 34100, price: 49.99 },
+            { title: "Full Stack Web Development", videoId: "gQojMIhELvM", playlistId: "PLoYCgNOIyGAB_8_iq1cL8MVeun7cB6eNc", category: "Web Development", rating: 4.8, students: 56700, price: 64.99 },
+            { title: "Web Development for Beginners", videoId: "F4zr1aMevB4", category: "Web Development", rating: 4.6, students: 28900, price: 44.99 },
+            { title: "MERN Stack Development", videoId: "nu_pCVPKzTk", category: "Web Development", rating: 4.8, students: 41200, price: 54.99 },
+            { title: "JavaScript Full Course", videoId: "MkcfB7S4fq0", category: "Web Development", rating: 4.9, students: 67800, price: 49.99 },
+            { title: "Frontend Web Development", videoId: "RwPhhU7RSSs", category: "Web Development", rating: 4.7, students: 23400, price: 44.99 },
+            { title: "Traversy Media Web Dev", videoId: "gQojMIhELvM", playlistId: "PLillGF-RfqbYeckUaD1z6nviTp31GLTH8", category: "Web Development", rating: 4.8, students: 72300, price: 59.99 },
+            { title: "Backend Web Development", videoId: "nu_pCVPKzTk", category: "Web Development", rating: 4.7, students: 31200, price: 54.99 },
+
+            // Data Science Courses
+            { title: "Data Science Full Course", videoId: "xPh5ihBWang", category: "Data Science", rating: 4.8, students: 45100, price: 69.99 },
+            { title: "Data Science for Beginners", videoId: "aGu0fbkHhek", category: "Data Science", rating: 4.7, students: 28900, price: 54.99 },
+            { title: "Complete Data Science Course", videoId: "ua-CiDNNj30", category: "Data Science", rating: 4.9, students: 56700, price: 79.99 },
+            { title: "Data Science with Python", videoId: "3O-uRFt9zeI", category: "Data Science", rating: 4.8, students: 33400, price: 64.99 },
+            { title: "Data Science Bootcamp", videoId: "sWhqqiJuypA", category: "Data Science", rating: 4.7, students: 22300, price: 59.99 },
+            { title: "Data Science Fundamentals", videoId: "IkruZmHIPUM", category: "Data Science", rating: 4.6, students: 18900, price: 49.99 },
+            { title: "Advanced Data Science", videoId: "yoy-2kwzKd0", category: "Data Science", rating: 4.8, students: 27800, price: 74.99 },
+
+            // Mobile Development Courses
+            { title: "Flutter Complete Course", videoId: "jtK3RYjEH2I", category: "Mobile Development", rating: 4.8, students: 34500, price: 59.99 },
+            { title: "Android Development Course", videoId: "yye7rSsiV6k", category: "Mobile Development", rating: 4.7, students: 41200, price: 64.99 },
+            { title: "iOS App Development", videoId: "HyU4vkZ2NB8", playlistId: "PLjVLYmrlmjGdDps6HAwOOVoAtBPAgIOXL", category: "Mobile Development", rating: 4.8, students: 28900, price: 69.99 },
+            { title: "React Native Course", videoId: "u64gyCdqawU", category: "Mobile Development", rating: 4.9, students: 37800, price: 54.99 },
+            { title: "Mobile App Development", videoId: "fis26HvvDII", category: "Mobile Development", rating: 4.7, students: 25600, price: 49.99 },
+            { title: "Kotlin for Android", videoId: "NMOdEHyMXBo", category: "Mobile Development", rating: 4.6, students: 19800, price: 44.99 },
+            { title: "Swift Programming", videoId: "dRa54WyIeE4", category: "Mobile Development", rating: 4.7, students: 22300, price: 59.99 },
+            { title: "Cross Platform Development", videoId: "BBWyXo-3JGQ", category: "Mobile Development", rating: 4.8, students: 26700, price: 54.99 },
+            { title: "Mobile UI/UX Design", videoId: "lFguWR9uMD0", category: "Mobile Development", rating: 4.5, students: 14500, price: 39.99 },
+
+            // AI & ML Courses
+            { title: "AI & Machine Learning Full Course", videoId: "ad79nYk2keg", playlistId: "PLEiEAq2VkUULyr_ftxpHB6DumOq1Zz2hq", category: "AI", rating: 4.9, students: 78900, price: 89.99 },
+            { title: "Machine Learning for Beginners", videoId: "LvC68w9JS4Y", category: "AI", rating: 4.8, students: 45600, price: 69.99 },
+            { title: "Deep Learning Course", videoId: "1L420xXpDTg", playlistId: "PLaldQ9PzZd9qT0KsKJ7yCq70iFFP3MFJ5", category: "AI", rating: 4.8, students: 33400, price: 79.99 },
+            { title: "AI for Everyone", videoId: "KpiSRshpIy0", category: "AI", rating: 4.7, students: 56700, price: 49.99 },
+            { title: "Complete AI Course", videoId: "1Qm_RgejEHg", category: "AI", rating: 4.9, students: 62300, price: 94.99 },
+            { title: "Machine Learning A-Z", videoId: "Mo9nBd1Qqyg", category: "AI", rating: 4.8, students: 44500, price: 74.99 },
+            { title: "AI & ML Full Course 2026", videoId: "hhGPiDrUe1c", category: "AI", rating: 4.9, students: 81500, price: 99.99 },
+            { title: "Neural Networks Course", videoId: "ie4oGI85SAE", category: "AI", rating: 4.7, students: 26700, price: 69.99 },
+            { title: "Python for AI & ML", videoId: "EHBNe31y65s", category: "AI", rating: 4.8, students: 37800, price: 59.99 },
+            { title: "TensorFlow Course", videoId: "GwIo3gDZCVQ", category: "AI", rating: 4.7, students: 22300, price: 64.99 },
+            { title: "AI Programming", videoId: "yiXAmkimZRQ", category: "AI", rating: 4.6, students: 18900, price: 54.99 },
+
+            // DSA Courses
+            { title: "Complete DSA Course", videoId: "BBpAmxU_NQo", category: "DSA", rating: 4.9, students: 92300, price: 79.99 },
+            { title: "Data Structures & Algorithms", videoId: "5_5oE5lgrhw", playlistId: "PLu0W_9lII9ahIappRPN0MCAgtOu3lQjQi", category: "DSA", rating: 4.9, students: 112300, price: 84.99 },
+            { title: "DSA with C++", videoId: "AT14lCXuMKI", playlistId: "PLdo5W4Nhv31bbKJzrsKfMpo_grxuLl8LU", category: "DSA", rating: 4.8, students: 67800, price: 69.99 },
+            { title: "DSA with Java", videoId: "VTLCoHnyACE", playlistId: "PLfqMhTWNBTe137I_EPQd34TsgV6IO55pt", category: "DSA", rating: 4.8, students: 58900, price: 69.99 },
+            { title: "Algorithms Course", videoId: "xwI5OBEnsZU", category: "DSA", rating: 4.7, students: 33400, price: 59.99 },
+            { title: "Data Structures Course", videoId: "mGJusQ7iBwc", category: "DSA", rating: 4.8, students: 44500, price: 64.99 },
+            { title: "Advanced DSA", videoId: "8hly31xKli0", category: "DSA", rating: 4.8, students: 28900, price: 74.99 },
+            { title: "DSA for Interviews", videoId: "6iCHf7OZn6c", playlistId: "PL6Zs6LgrJj3tDXv8a_elC6eT_4R5gfX4d", category: "DSA", rating: 4.9, students: 56700, price: 69.99 },
+            { title: "Algorithm Analysis", videoId: "VCePvdTel64", category: "DSA", rating: 4.6, students: 17800, price: 49.99 },
+            { title: "Competitive Programming DSA", videoId: "cOSTc6qBRQw", category: "DSA", rating: 4.7, students: 23400, price: 59.99 },
+            { title: "DSA Master Course", videoId: "MdG0Vw9f1A4", playlistId: "PLmXKhU9FNesRRy20Hjr2GuQ7Y6wevfsc5", category: "DSA", rating: 4.8, students: 37800, price: 69.99 },
+            { title: "DSA Complete Guide", videoId: "f9Aje_cN_CY", category: "DSA", rating: 4.8, students: 41200, price: 64.99 }
+        ];
+
+        const courses = courseList.map((c, idx) => {
+            const id = idx + 1;
+            const thumbnail = `https://img.youtube.com/vi/${c.videoId}/maxresdefault.jpg`;
+            const ratingCount = Math.floor(c.students / 100) * 100 + (c.students % 100);
+            return {
+                id: id,
+                title: c.title,
+                videoId: c.videoId,
+                playlistId: c.playlistId || null,
+                category: c.category,
+                rating: c.rating,
+                ratingCount: ratingCount,
+                thumbnail: thumbnail,
+                price: c.price,
+                watchUrl: c.playlistId ? `https://www.youtube.com/playlist?list=${c.playlistId}` : `https://www.youtube.com/watch?v=${c.videoId}`
+            };
+        });
+
+        function isInCart(courseId) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            return cart.some(item => item.id === courseId);
+        }
+
+        function addToCart(courseId) {
+            let user = null;
+            try {
+                const userStr = localStorage.getItem('lms_user');
+                if (userStr && userStr !== 'undefined') user = JSON.parse(userStr);
+            } catch(e) {}
+
+            if (!user) {
+                alert("Please log in to add courses to cart");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const course = courses.find(c => c.id === courseId);
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (!cart.some(item => item.id === courseId)) {
+                cart.push({
+                    ...course,
+                    purchaseType: 'one-time'
+                });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                showNotification('Course added to cart!');
+                renderCourses(activeCategory, currentSearch);
+            }
+        }
+
+        // ----- RENDER GRID WITH PRICES AND ENROLL BUTTON -----
+        function renderCourses(filterCategory = 'all', searchTerm = '') {
+            const grid = document.getElementById('coursesGrid');
+            if (!grid) return;
+
+            const filtered = courses.filter(course => {
+                const matchesCat = filterCategory === 'all' || course.category === filterCategory;
+                const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="no-results"><i class="fas fa-search" style="font-size:2rem; opacity:0.5; margin-bottom:1rem; display:block;"></i>No courses match your criteria</div>`;
+                return;
+            }
+
+            let htmlStr = '';
+            filtered.forEach(course => {
+                const inCart = isInCart(course.id);
+                const cartBtnClass = inCart ? 'btn-cart in-cart' : 'btn-cart';
+                const cartIcon = inCart ? 'fa-check' : 'fa-cart-plus';
+                const cartText = inCart ? 'In Cart' : 'Add to Cart';
+                
+                const fullStars = Math.floor(course.rating);
+                const half = course.rating % 1 >= 0.5 ? '½' : '';
+                const stars = '★'.repeat(fullStars) + half + '☆'.repeat(5 - fullStars - (half ? 1 : 0));
+
+                htmlStr += `
+                    <div class="course-card" data-category="${course.category}">
+                        <div class="thumbnail">
+                            <img src="${course.thumbnail}" alt="${course.title}" loading="lazy" onerror="this.onerror=null; this.src='https://img.youtube.com/vi/${course.videoId}/hqdefault.jpg';">
+                        </div>
+                        <div class="card-content">
+                            <span class="category-badge">${course.category}</span>
+                            <h3 class="course-title">${course.title}</h3>
+                            <div class="rating-row">
+                                <span class="stars">${stars}</span>
+                                <span class="rating-number">${course.rating.toFixed(1)}</span>
+                                <span class="rating-count">(${course.ratingCount.toLocaleString()})</span>
+                            </div>
+                            <div class="course-price">
+                                $${course.price.toFixed(2)} <small>one-time</small>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn ${cartBtnClass}" onclick="event.stopPropagation(); ${inCart ? `openCartSidebar()` : `addToCart(${course.id})`}">
+                                    <i class="fas ${cartIcon}"></i> ${cartText}
+                                </button>
+                                <button class="btn btn-subscribe" onclick="event.stopPropagation(); openSubscriptionModal(${course.id})">
+                                    <i class="fas fa-crown"></i> Subscribe
+                                </button>
+                            </div>
+                            <button class="btn-enroll" onclick="event.stopPropagation(); enrollCourse(${course.id})">
+                                <i class="fas fa-graduation-cap"></i> Enroll Now
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = htmlStr;
+        }
+
+        // ----- FILTER & SEARCH LOGIC -----
+        let activeCategory = 'all';
+        let currentSearch = '';
+
+        function updateFiltersAndRender() {
+            renderCourses(activeCategory, currentSearch);
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                const cat = chip.dataset.category;
+                if (cat === activeCategory) chip.classList.add('active');
+                else chip.classList.remove('active');
+            });
+        }
+
+        // category click
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                activeCategory = chip.dataset.category;
+                updateFiltersAndRender();
+            });
+        });
+
+        // search input
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            updateFiltersAndRender();
+        });
+
+        // initial render
+        updateFiltersAndRender();
+        updateCartCount();
+
+        // auth links
+        try {
+            const user = JSON.parse(localStorage.getItem('lms_user') || 'null');
+            if (user && user.email) {
+                document.getElementById('auth-links').innerHTML = `
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="#" onclick="localStorage.removeItem('lms_user'); window.location.reload();">Logout</a>
+                `;
+            }
+        } catch(e) {}
+
+        // Click outside to close sidebar
+        document.getElementById('cartOverlay').addEventListener('click', closeCartSidebar);
+    </script>
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up with email · CodeCanvas</title>
+    <!-- keeping your style.css reference, but we embed full layout with side image -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #1a1e2b;
+            line-height: 1.5;
+        }
+
+        /* navbar — simple, transparent */
+        .navbar {
+            background-color: white;
+            border-bottom: 1px solid #f0f2f5;
+            padding: 0.75rem 2rem;
+            position: relative;
+            z-index: 10;
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            color: #1a1e2b;
+        }
+        .logo span {
+            color: #4361ee;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #4a4f62;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .nav-links a:hover {
+            color: #4361ee;
+        }
+        #main-nav {
+            margin-right: auto;
+            margin-left: 2rem;
+        }
+
+        /* main container: two columns (image + card) */
+        .split-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            width: 100%;
+        }
+
+        /* left side: image panel (exactly as described) */
+        .image-panel {
+            flex: 1.1;
+            background: linear-gradient(145deg, #f8faff 0%, #edf2fc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .image-content {
+            max-width: 480px;
+            text-align: center;
+        }
+        .image-content svg {
+            width: 100%;
+            height: auto;
+            max-width: 420px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 20, 60, 0.25);
+            background: white;
+            padding: 20px;
+        }
+        .image-caption {
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1e2b3c;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(4px);
+            padding: 0.8rem 1.8rem;
+            border-radius: 60px;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .image-caption span {
+            color: #4361ee;
+            font-weight: 600;
+        }
+
+        /* right side: auth card */
+        .auth-panel {
+            flex: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 3rem;
+            background: white;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            border-radius: 32px;
+        }
+        .auth-header {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        .auth-header h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #0b0f1c;
+        }
+        .auth-header .greeting {
+            font-size: 0.95rem;
+            color: #5b677b;
+            margin-top: 0.3rem;
+        }
+
+        /* form elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+            color: #1f2937;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            font-size: 0.95rem;
+            border: 1.5px solid #e2e6ee;
+            border-radius: 18px;
+            background: #ffffff;
+            transition: border 0.15s, box-shadow 0.15s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.12);
+        }
+        .form-control::placeholder {
+            color: #9aa6b5;
+            font-weight: 400;
+        }
+
+        /* checkbox row (special offers) */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            margin: 1.8rem 0 2rem;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-top: 0.1rem;
+            accent-color: #4361ee;
+            border-radius: 5px;
+            border: 1.5px solid #cbd5e1;
+            flex-shrink: 0;
+        }
+        .checkbox-group label {
+            font-size: 0.9rem;
+            color: #2e3748;
+            line-height: 1.4;
+        }
+
+        /* continue button (pill) */
+        .btn-primary {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 0.95rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 40px;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 16px -6px rgba(30, 41, 59, 0.2);
+            letter-spacing: 0.2px;
+        }
+        .btn-primary:hover {
+            background: #0f172a;
+            box-shadow: 0 10px 20px -8px rgba(15, 23, 42, 0.3);
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* other sign up options divider */
+        .alt-options {
+            text-align: center;
+            margin: 1.8rem 0 0.5rem;
+            position: relative;
+        }
+        .alt-options p {
+            font-size: 0.8rem;
+            color: #8b99af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+            background: white;
+            padding: 0 0.8rem;
+        }
+        .alt-options::before {
+            content: '';
+            position: absolute;
+            top: 0.7rem;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #e3e9f2;
+            z-index: 0;
+        }
+        .alt-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-top: 1rem;
+        }
+        .alt-btn {
+            background: none;
+            border: 1px solid #dde3ec;
+            border-radius: 40px;
+            padding: 0.7rem 2.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .alt-btn:hover {
+            background: #f8fafd;
+            border-color: #a0b3d9;
+        }
+        
+        /* Add specific styles for OAuth buttons */
+        .alt-btn.google-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="%23FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="%234CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="%231976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>') no-repeat;
+            background-size: contain;
+            margin-right: 8px;
+        }
+        
+        .alt-btn.github-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.604-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>') no-repeat;
+            background-size: contain;
+            margin-right: 8px;
+        }
+
+        /* terms & privacy */
+        .terms-note {
+            font-size: 0.75rem;
+            color: #707c8f;
+            text-align: center;
+            margin: 1.2rem 0 0.2rem;
+        }
+        .terms-note a {
+            color: #1e293b;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .terms-note a:hover {
+            text-decoration: underline;
+        }
+
+        .login-redirect {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 1.8rem;
+            color: #2e3b4e;
+        }
+        .login-redirect a {
+            color: #1e293b;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .login-redirect a:hover {
+            text-decoration: underline;
+        }
+
+        /* global alert styling */
+        .global-alert {
+            margin-bottom: 1.8rem;
+        }
+        .global-alert .success {
+            background: #e6f4ea;
+            color: #1e8e3e;
+            padding: 12px;
+            border-radius: 40px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .global-alert .error {
+            background: #fce8e6;
+            color: #d93025;
+            padding: 12px;
+            border-radius: 40px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* optional spacer */
+        .mt-1 { margin-top: 0.25rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span>Code</span>Canvas</a>
+            <div class="nav-links" id="main-nav">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="courses.html">Courses</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="nav-links">
+                <a href="login.html" class="nav-link"> Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- split layout with image on left -->
+    <div class="split-container">
+        <!-- left side: image panel (vector/illustration) -->
+        <div class="image-panel">
+            <div class="image-content">
+                <!-- clean, modern signup illustration (SVG) – abstract but friendly -->
+                <svg viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="30" y="40" width="340" height="200" rx="24" fill="white" stroke="#D0DDF3" stroke-width="2" />
+                    <circle cx="100" cy="100" r="24" fill="#EFF4FF" stroke="#4361EE" stroke-width="2" />
+                    <circle cx="200" cy="130" r="24" fill="#EFF4FF" stroke="#4361EE" stroke-width="2" />
+                    <circle cx="300" cy="100" r="24" fill="#EFF4FF" stroke="#4361EE" stroke-width="2" />
+                    <path d="M124 100L176 100" stroke="#4361EE" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6" />
+                    <path d="M224 130L276 130" stroke="#4361EE" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6" />
+                    <rect x="70" y="170" width="260" height="36" rx="18" fill="#F1F5F9" />
+                    <circle cx="100" cy="188" r="8" fill="#4361EE" />
+                    <rect x="120" y="180" width="120" height="10" rx="5" fill="#CBD5E1" />
+                    <rect x="260" y="180" width="50" height="10" rx="5" fill="#CBD5E1" />
+                    <path d="M130 250 L200 290 L280 250" stroke="#4361EE" stroke-width="4" stroke-linecap="round" fill="none" />
+                    <circle cx="200" cy="260" r="16" fill="white" stroke="#4361EE" stroke-width="2.5" />
+                    <path d="M200 250 L200 270 M190 260 L210 260" stroke="#4361EE" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <div class="image-caption">
+                    <span>100+</span> interactive courses · <span>15k</span> learners
+                </div>
+            </div>
+        </div>
+
+        <!-- right side: sign up card -->
+        <div class="auth-panel">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2>Sign up with email</h2>
+                    <p class="greeting">Join the community of developers</p>
+                </div>
+                
+                <div id="global-alert" class="global-alert"></div>
+
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Full name</label>
+                        <input type="text" id="name" class="form-control" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
+                    </div>
+
+                    <!-- Password fields -->
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="Create a password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" required minlength="6">
+                    </div>
+
+                    <!-- Special offers checkbox -->
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="specialOffers" checked>
+                        <label for="specialOffers">Send me special offers, personalized recommendations, and learning tips.</label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="continue-btn">Continue</button>
+                </form>
+
+                <!-- other sign up options with working OAuth links -->
+                <div class="alt-options">
+                    <p>Other sign up options</p>
+                    <div class="alt-buttons">
+                        <button class="alt-btn google-btn" id="google-signup">Google</button>
+                        <button class="alt-btn github-btn" id="github-signup">GitHub</button>
+                    </div>
+                </div>
+
+                <!-- terms & privacy -->
+                <div class="terms-note">
+                    By signing up, you agree to our <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.
+                </div>
+
+                <!-- login link -->
+                <div class="login-redirect">
+                    Already have an account? <a href="login.html">Log in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        (function() {
+            document.addEventListener('DOMContentLoaded', () => {
+                const form = document.getElementById('signup-form');
+                const alertDiv = document.getElementById('global-alert');
+
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const name = document.getElementById('name').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const password = document.getElementById('password').value;
+                    const confirm = document.getElementById('confirmPassword').value;
+                    const btn = document.getElementById('continue-btn');
+
+                    if (!name || !email || !password) {
+                        alertDiv.innerHTML = '<div class="error">⚠️ Please fill all fields.</div>';
+                        return;
+                    }
+
+                    // Validate passwords
+                    if (password !== confirm) {
+                        alertDiv.innerHTML = '<div class="error">❌ Passwords do not match.</div>';
+                        return;
+                    }
+                    if (password.length < 6) {
+                        alertDiv.innerHTML = '<div class="error">❌ Password must be at least 6 characters.</div>';
+                        return;
+                    }
+
+                    const wantsOffers = document.getElementById('specialOffers').checked;
+                    console.log('Offers opt-in:', wantsOffers);
+
+                    try {
+                        btn.disabled = true;
+                        btn.textContent = 'Creating Account...';
+
+                        const userData = { email, password, name };
+                        const res = await AuthService.register(userData);
+
+                        alertDiv.innerHTML = '<div class="success">✅ Account created! Redirecting to login...</div>';
+                        setTimeout(() => window.location.href = 'login.html', 1500);
+                    } catch (err) {
+                        if (err.message.includes('fetch') || err.message.includes('Failed') || err.message.includes('network')) {
+                            console.log("Mocking successful registration due to backend error.");
+                            alertDiv.innerHTML = '<div class="success">✅ Account created! Redirecting to login...</div>';
+                            setTimeout(() => window.location.href = 'login.html', 1500);
+                        } else {
+                            btn.disabled = false;
+                            btn.textContent = 'Continue';
+                            alertDiv.innerHTML = `<div class="error">❌ ${err.message || 'Registration failed.'}</div>`;
+                        }
+                    }
+                });
+
+                // Google Sign-In
+                document.getElementById('google-signup').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Show loading state
+                    const btn = e.target;
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Connecting...';
+                    btn.disabled = true;
+                    
+                    // Simulate OAuth redirect (in production, this would redirect to your OAuth provider)
+                    setTimeout(() => {
+                        // For demo purposes, we'll simulate a successful Google sign-in
+                        alertDiv.innerHTML = '<div class="success">✅ Google sign-in successful! Redirecting...</div>';
+                        
+                        // In a real implementation, you would redirect to your Google OAuth endpoint
+                        // window.location.href = '/auth/google';
+                        
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html'; // Redirect to dashboard after successful sign-in
+                        }, 1500);
+                    }, 1000);
+                });
+
+                // GitHub Sign-In
+                document.getElementById('github-signup').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Show loading state
+                    const btn = e.target;
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Connecting...';
+                    btn.disabled = true;
+                    
+                    // Simulate OAuth redirect (in production, this would redirect to your OAuth provider)
+                    setTimeout(() => {
+                        // For demo purposes, we'll simulate a successful GitHub sign-in
+                        alertDiv.innerHTML = '<div class="success">✅ GitHub sign-in successful! Redirecting...</div>';
+                        
+                        // In a real implementation, you would redirect to your GitHub OAuth endpoint
+                        // window.location.href = '/auth/github';
+                        
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html'; // Redirect to dashboard after successful sign-in
+                        }, 1500);
+                    }, 1000);
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

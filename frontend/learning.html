@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Center - CodeCanvas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            height: 100vh;
+            overflow: hidden; /* Prevent full body scroll, relying on sidebar/content scroll */
+        }
+        .learning-layout {
+            display: flex;
+            height: calc(100vh - 70px);
+            background: var(--background);
+        }
+        .video-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .player-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            background: #000;
+        }
+        .player-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .lesson-info {
+            padding: var(--space-xl);
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .learning-sidebar {
+            width: 350px;
+            background: var(--surface);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.2);
+        }
+        .syllabus-list {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .section-header {
+            padding: var(--space-sm) var(--space-md);
+            background: var(--surface-hover);
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .lesson-nav-item {
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            transition: var(--transition);
+        }
+        .lesson-nav-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .lesson-nav-item.active {
+            background: rgba(79, 70, 229, 0.15);
+            border-left: 3px solid var(--primary);
+        }
+        .check-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .check-circle.completed {
+            background: var(--secondary);
+            border-color: var(--secondary);
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--space-lg);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border);
+        }
+        @media (max-width: 900px) {
+            .learning-layout {
+                flex-direction: column;
+                height: auto;
+                overflow: auto;
+            }
+            body { overflow: auto; }
+            .learning-sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" style="padding: 0.5rem 0;">
+        <div class="container nav-container" style="max-width: 100%;">
+            <a href="dashboard.html" class="logo" style="font-size: 1.25rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7 7l-7-7 7-7"/></svg>
+                Back to Dashboard
+            </a>
+            <div id="course-title-nav" style="font-weight: 500;">Loading...</div>
+        </div>
+    </nav>
+
+    <div class="learning-layout">
+        <main class="video-container">
+            <div class="player-wrapper" id="video-frame-container">
+                <!-- Iframe injected via JS -->
+            </div>
+            
+            <div class="lesson-info">
+                <h1 id="lesson-title">Select a Lesson</h1>
+                <div id="global-alert"></div>
+                
+                <div class="controls">
+                    <button class="btn btn-secondary" id="prev-btn" onclick="playLesson('prev')" disabled>&larr; Previous Lesson</button>
+                    
+                    <button class="btn btn-primary" id="complete-btn" onclick="markComplete()" style="display: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M20 6L9 17l-5-5"/></svg>
+                        Mark as Complete
+                    </button>
+                    
+                    <button class="btn btn-secondary" id="next-btn" onclick="playLesson('next')" disabled>Next Lesson &rarr;</button>
+                </div>
+            </div>
+        </main>
+
+        <aside class="learning-sidebar">
+            <div class="sidebar-header">
+                <h3>Course Content</h3>
+                <div class="progress-wrapper mt-1">
+                    <div class="progress-fill" id="overall-progress" style="width: 0%"></div>
+                </div>
+                <div style="font-size: 0.75rem; text-align: right; margin-top: 4px; color: var(--text-muted);" id="progress-text">0% Complete</div>
+            </div>
+            <div class="syllabus-list" id="syllabus-container">
+                <p class="text-center mt-2 text-muted">Loading syllabus...</p>
+            </div>
+        </aside>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/learning.js"></script>
+</body>
+</html>

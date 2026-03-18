@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in · CodeCanvas</title>
+    <!-- reference to your style.css, plus embedded layout for side image -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #1a1e2b;
+            line-height: 1.5;
+        }
+
+        /* navbar — consistent with signup page */
+        .navbar {
+            background-color: white;
+            border-bottom: 1px solid #f0f2f5;
+            padding: 0.75rem 2rem;
+            position: relative;
+            z-index: 10;
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            color: #1a1e2b;
+        }
+        .logo span {
+            color: #4361ee;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #4a4f62;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .nav-links a:hover {
+            color: #4361ee;
+        }
+        #main-nav {
+            margin-right: auto;
+            margin-left: 2rem;
+        }
+
+        /* split container: two columns (image + card) */
+        .split-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            width: 100%;
+        }
+
+        /* left side: image panel with a different illustration (welcoming / login vibe) */
+        .image-panel {
+            flex: 1.1;
+            background: linear-gradient(135deg, #f5f0ff 0%, #e9eefc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+        .image-content {
+            max-width: 480px;
+            text-align: center;
+        }
+        /* fresh SVG for login – abstract "welcome back" style */
+        .image-content svg {
+            width: 100%;
+            height: auto;
+            max-width: 420px;
+            border-radius: 32px;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            padding: 20px 20px 10px 20px;
+            box-shadow: 0 30px 40px -20px rgba(47, 58, 128, 0.2);
+        }
+        .image-caption {
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #263445;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(4px);
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            display: inline-block;
+            border: 1px solid #ffffff70;
+        }
+        .image-caption span {
+            color: #4361ee;
+            font-weight: 600;
+        }
+
+        /* right side: auth card */
+        .auth-panel {
+            flex: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 3rem;
+            background: white;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 32px;
+        }
+        .auth-header {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        .auth-header h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #0b0f1c;
+        }
+        .auth-header .greeting {
+            font-size: 0.95rem;
+            color: #5b677b;
+            margin-top: 0.3rem;
+        }
+
+        /* form elements */
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+        .form-label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+            color: #1f2937;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            font-size: 0.95rem;
+            border: 1.5px solid #e2e6ee;
+            border-radius: 18px;
+            background: #ffffff;
+            transition: border 0.15s, box-shadow 0.15s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.12);
+        }
+        .form-control::placeholder {
+            color: #9aa6b5;
+            font-weight: 400;
+        }
+
+        /* sign in button (pill) */
+        .btn-primary {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 0.95rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 40px;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 16px -6px rgba(30, 41, 59, 0.2);
+            letter-spacing: 0.2px;
+            margin-top: 0.5rem;
+        }
+        .btn-primary:hover {
+            background: #0f172a;
+            box-shadow: 0 10px 20px -8px rgba(15, 23, 42, 0.3);
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* other sign in options (mirror signup page, but keeps consistency) */
+        .alt-options {
+            text-align: center;
+            margin: 1.8rem 0 0.5rem;
+            position: relative;
+        }
+        .alt-options p {
+            font-size: 0.8rem;
+            color: #8b99af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+            background: white;
+            padding: 0 0.8rem;
+        }
+        .alt-options::before {
+            content: '';
+            position: absolute;
+            top: 0.7rem;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #e3e9f2;
+            z-index: 0;
+        }
+        .alt-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-top: 1rem;
+        }
+        .alt-btn {
+            background: none;
+            border: 1px solid #dde3ec;
+            border-radius: 40px;
+            padding: 0.7rem 2.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .alt-btn:hover {
+            background: #f8fafd;
+            border-color: #a0b3d9;
+        }
+
+        /* terms & privacy (lighter) */
+        .terms-note {
+            font-size: 0.75rem;
+            color: #707c8f;
+            text-align: center;
+            margin: 1.2rem 0 0.2rem;
+        }
+        .terms-note a {
+            color: #1e293b;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .terms-note a:hover {
+            text-decoration: underline;
+        }
+
+        .signup-redirect {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 1.8rem;
+            color: #2e3b4e;
+        }
+        .signup-redirect a {
+            color: #1e293b;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .signup-redirect a:hover {
+            text-decoration: underline;
+        }
+
+        /* global alert styling */
+        .global-alert {
+            margin-bottom: 1.8rem;
+        }
+        .global-alert .success {
+            background: #e6f4ea;
+            color: #1e8e3e;
+            padding: 12px;
+            border-radius: 40px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .global-alert .error {
+            background: #fce8e6;
+            color: #d93025;
+            padding: 12px;
+            border-radius: 40px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .mt-1 { margin-top: 0.25rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span>Code</span>Canvas</a>
+            <div class="nav-links" id="main-nav">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="courses.html">Courses</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="nav-links">
+                <a href="signup.html" class="nav-link">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- split layout: image on left, login card on right -->
+    <div class="split-container">
+        <!-- left side: unique image for login page (different from signup) -->
+        <div class="image-panel">
+            <div class="image-content">
+                <!-- distinct SVG illustration: "welcome back / learning" theme -->
+                <svg viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="40" y="40" width="320" height="200" rx="24" fill="white" stroke="#B7C9E8" stroke-width="2" />
+                    <!-- books / desk -->
+                    <rect x="70" y="150" width="260" height="40" rx="12" fill="#EFF4FF" stroke="#4361EE" stroke-width="2" />
+                    <rect x="100" y="120" width="40" height="30" rx="8" fill="#D6E0FA" stroke="#4361EE" stroke-width="1.5" />
+                    <rect x="160" y="100" width="40" height="50" rx="8" fill="#D6E0FA" stroke="#4361EE" stroke-width="1.5" />
+                    <rect x="220" y="80" width="40" height="70" rx="8" fill="#D6E0FA" stroke="#4361EE" stroke-width="1.5" />
+                    <!-- floating abstract avatar -->
+                    <circle cx="300" cy="100" r="28" fill="white" stroke="#4361EE" stroke-width="2.5" />
+                    <circle cx="290" cy="92" r="4" fill="#4361EE" />
+                    <circle cx="310" cy="92" r="4" fill="#4361EE" />
+                    <path d="M295 112 Q300 122 315 115" stroke="#4361EE" stroke-width="2" fill="none" />
+                    <!-- checkmark or welcome icon -->
+                    <circle cx="120" cy="200" r="12" fill="#E6F0FF" stroke="#4361EE" stroke-width="2" />
+                    <path d="M114 200 L119 205 L127 195" stroke="#4361EE" stroke-width="2.5" stroke-linecap="round" />
+                    <!-- code bracket elements -->
+                    <text x="190" y="240" font-family="monospace" fill="#4361EE" font-weight="bold" font-size="28">&lt;/&gt;</text>
+                </svg>
+                <div class="image-caption">
+                    <span>Welcome back</span> · continue your journey
+                </div>
+            </div>
+        </div>
+
+        <!-- right side: login card (styled like signup but for sign in) -->
+        <div class="auth-panel">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2>Welcome Back</h2>
+                    <p class="greeting">Sign in to continue your learning journey</p>
+                </div>
+                
+                <div id="global-alert" class="global-alert"></div>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-primary" id="signin-btn">Sign In</button>
+                </form>
+
+                <!-- optional "other sign in options" to be consistent with signup page (you can keep or remove) -->
+                <div class="alt-options">
+                    <p>Other sign in options</p>
+                    <div class="alt-buttons">
+                        <button class="alt-btn">Google</button>
+                        <button class="alt-btn">GitHub</button>
+                    </div>
+                </div>
+
+                <!-- terms hint (light) -->
+                <div class="terms-note">
+                    By signing in, you agree to our <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.
+                </div>
+
+                <!-- sign up redirect -->
+                <div class="signup-redirect">
+                    Don't have an account? <a href="signup.html">Sign up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- scripts (your existing auth logic, with mock fallback) -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('login-form');
+            const alertDiv = document.getElementById('global-alert');
+            const btn = document.getElementById('signin-btn');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                if (!email || !password) {
+                    alertDiv.innerHTML = '<div class="error">⚠️ Please fill in both fields.</div>';
+                    return;
+                }
+
+                try {
+                    btn.disabled = true;
+                    btn.textContent = 'Signing In...';
+                    
+                    // using your existing AuthService.login
+                    const res = await AuthService.login(email, password);
+                    
+                    alertDiv.innerHTML = '<div class="success">✅ Login successful! Redirecting...</div>';
+                    
+                    setTimeout(() => {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const redirectUrl = urlParams.get('redirect');
+                        if (redirectUrl) {
+                            window.location.href = redirectUrl;
+                        } else {
+                            AuthService.redirectBasedOnRole(res.user);
+                        }
+                    }, 1000);
+                } catch (err) {
+                    // fallback mock if backend missing (as in your original)
+                    if (err.message.includes('fetch') || err.message.includes('Failed') || err.message.includes('network')) {
+                        console.log("Mocking successful login due to backend error.");
+                        const mockUser = { 
+                            username: email.split('@')[0], 
+                            name: email.split('@')[0], 
+                            email: email, 
+                            role: 'student' 
+                        };
+                        localStorage.setItem('access_token', 'mock_token');
+                        localStorage.setItem('lms_user', JSON.stringify(mockUser));
+                        alertDiv.innerHTML = '<div class="success">✅ Login successful! Redirecting...</div>';
+                        
+                        setTimeout(() => {
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const redirectUrl = urlParams.get('redirect');
+                            if (redirectUrl) {
+                                window.location.href = redirectUrl;
+                            } else {
+                                AuthService.redirectBasedOnRole(mockUser);
+                            }
+                        }, 1000);
+                    } else {
+                        btn.disabled = false;
+                        btn.textContent = 'Sign In';
+                        alertDiv.innerHTML = `<div class="error">❌ ${err.message || "Invalid credentials. Please try again."}</div>`;
+                    }
+                }
+            });
+
+            // optional: alt buttons placeholder
+            document.querySelectorAll('.alt-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alertDiv.innerHTML = '<div class="error">🌐 External sign-in not configured (demo).</div>';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

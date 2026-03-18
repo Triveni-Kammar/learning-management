@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard · CodeCanvas</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           Dashboard CSS - CodeCanvas LMS
+           Modern, clean, professional design
+           ======================================== */
+
+        /* CSS Variables */
+        :root {
+            --primary: #7b2eda;
+            --primary-light: #f0e6ff;
+            --primary-dark: #5b1fa8;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --bg-color: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.2s ease;
+        }
+
+        /* ========================================
+           Base Styles
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========================================
+           App Layout
+           ======================================== */
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ========================================
+           Sidebar Styles
+           ======================================== */
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .sidebar-nav a i {
+            width: 24px;
+            font-size: 1.1rem;
+            margin-right: 12px;
+        }
+
+        .sidebar-nav li.active a {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .sidebar-nav a:hover:not(.active a) {
+            background: var(--border-light);
+            color: var(--text-dark);
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 12px;
+            margin-left: auto;
+        }
+
+        /* Sidebar Footer - User Mini */
+        .sidebar-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .user-mini {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ========================================
+           Main Content Area
+           ======================================== */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-width: 0;
+        }
+
+        /* ========================================
+           Top Navbar
+           ======================================== */
+        .top-navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border-light);
+            padding: 12px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            backdrop-filter: blur(8px);
+            background: rgba(255,255,255,0.9);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .page-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        /* Search Box */
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 16px;
+            width: 300px;
+            transition: var(--transition);
+        }
+
+        .search-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .search-box i {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-right: 8px;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-light);
+        }
+
+        /* Notifications */
+        .notifications {
+            position: relative;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--surface);
+        }
+
+        /* User Profile */
+        .user-profile {
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* ========================================
+           Dashboard Content
+           ======================================== */
+        .dashboard-container {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Welcome Section */
+        .welcome-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 32px;
+        }
+
+        .welcome-content h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .welcome-content h1 span {
+            color: var(--primary);
+        }
+
+        .welcome-content #userEmail {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .welcome-message {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .large-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Statistics Grid - Updated to 3 cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .stat-details {
+            flex: 1;
+        }
+
+        .stat-label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.2;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .view-all:hover {
+            gap: 10px;
+        }
+
+        /* Quick Action Cards */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .quick-action-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+            display: block;
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .quick-action-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--primary-light);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .quick-action-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .quick-action-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Recent Activity */
+        .activity-list {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .activity-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .activity-meta i {
+            font-size: 0.7rem;
+        }
+
+        .activity-badge {
+            background: var(--secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Auth Check */
+        .auth-check {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin: 40px 0;
+        }
+
+        .auth-check i {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+
+        .auth-check h2 {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .auth-check p {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 32px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        /* ========================================
+           Responsive Design
+           ======================================== */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-right {
+                gap: 16px;
+            }
+            
+            .search-box {
+                width: 200px;
+            }
+            
+            .dashboard-container {
+                padding: 20px;
+            }
+            
+            .welcome-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .activity-item {
+                flex-wrap: wrap;
+            }
+            
+            .activity-badge {
+                margin-left: 56px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-navbar {
+                padding: 12px 20px;
+            }
+            
+            .navbar-left {
+                gap: 12px;
+            }
+            
+            .search-box {
+                display: none;
+            }
+            
+            .stat-card {
+                padding: 16px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">Code<span>Canvas</span></a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="dashboard.html">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="my-courses.html">
+                            <i class="fas fa-book-open"></i>
+                            <span>My Courses</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="certificates.html">
+                            <i class="fas fa-certificate"></i>
+                            <span>Certificates</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                
+                <ul class="sidebar-bottom">
+                    <li>
+                        <a href="settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-mini">
+                    <div class="user-avatar-small" id="sidebarAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebarName"></div>
+                        <div class="user-role">Student</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navbar -->
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-title">Dashboard</div>
+                </div>
+                
+                <div class="navbar-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search courses...">
+                    </div>
+                    
+                    <div class="notifications">
+                        <i class="far fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </div>
+                    
+                    <div class="user-profile" id="userProfileTrigger">
+                        <div class="user-avatar" id="headerAvatar"></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-container" id="dashboardContent">
+                <!-- Content will be loaded dynamically based on auth status -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /**
+         * Dashboard JavaScript - CodeCanvas LMS
+         * Handles user data and statistics
+         */
+
+        // ========================================
+        // Check Authentication
+        // ========================================
+        
+        // Get current user from localStorage
+        function getCurrentUser() {
+            const userStr = localStorage.getItem('lms_user');
+            if (userStr) {
+                try {
+                    return JSON.parse(userStr);
+                } catch (e) {
+                    console.error('Error parsing user data', e);
+                    return null;
+                }
+            }
+            return null; // No default user - return null if not logged in
+        }
+
+        // Check if user is authenticated
+        function isAuthenticated() {
+            const user = getCurrentUser();
+            const token = localStorage.getItem('access_token');
+            return user !== null && token !== null;
+        }
+
+        // Get enrolled courses from localStorage
+        function getEnrolledCourses() {
+            const enrolledIds = JSON.parse(localStorage.getItem('enrolled_courses')) || [];
+            return enrolledIds;
+        }
+
+        // Get course progress from localStorage
+        function getCourseProgress(courseId) {
+            const progress = JSON.parse(localStorage.getItem('course_progress')) || {};
+            return progress[courseId] || 0;
+        }
+
+        // ========================================
+        // Render Dashboard Based on Auth Status
+        // ========================================
+        function renderDashboard() {
+            const dashboardContent = document.getElementById('dashboardContent');
+            
+            if (!isAuthenticated()) {
+                // Show login prompt if not authenticated
+                dashboardContent.innerHTML = `
+                    <div class="auth-check">
+                        <i class="fas fa-user-circle"></i>
+                        <h2>Welcome to CodeCanvas!</h2>
+                        <p>Please log in to access your dashboard and track your learning progress.</p>
+                        <div class="auth-buttons">
+                            <a href="login.html" class="btn-primary">Log In</a>
+                            <a href="signup.html" class="btn-outline">Sign Up</a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // User is authenticated - show dashboard
+            const user = getCurrentUser();
+            
+            // Update sidebar and header with user info
+            updateUserInterface(user);
+            
+            // Get stats
+            const enrolledIds = getEnrolledCourses();
+            let inProgress = 0;
+            let completed = 0;
+            
+            enrolledIds.forEach(id => {
+                const progress = getCourseProgress(id);
+                if (progress > 0 && progress < 100) {
+                    inProgress++;
+                } else if (progress === 100) {
+                    completed++;
+                }
+            });
+            
+            const certificates = completed;
+
+            // Render dashboard content
+            dashboardContent.innerHTML = `
+                <!-- Welcome Section -->
+                <section class="welcome-section">
+                    <div class="welcome-card">
+                        <div class="welcome-content">
+                            <h1>Welcome back, <span id="userName">${user.name.split(' ')[0]}</span>! 👋</h1>
+                            <p id="userEmail">${user.email}</p>
+                            <p class="welcome-message">Start your learning journey with CodeCanvas.</p>
+                        </div>
+                        <div class="welcome-avatar">
+                            <div class="large-avatar" id="welcomeAvatar">${user.avatar || user.name.substring(0, 2).toUpperCase()}</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Statistics Cards -->
+                <section class="stats-section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #fff0d9; color: #ed8936;">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-label">In Progress</span>
+                                <span class="stat-value">${inProgress}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #dcfce7; color: #10b981;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-label">Completed</span>
+                                <span class="stat-value">${completed}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #ffe4e6; color: #f43f5e;">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div class="stat-details">
+                                <span class="stat-label">Certificates</span>
+                                <span class="stat-value">${certificates}</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Actions - Get Started Section -->
+                <section class="quick-actions">
+                    <div class="section-header">
+                        <h2>Get Started</h2>
+                    </div>
+                    
+                    <div class="quick-actions-grid">
+                        <a href="courses.html" class="quick-action-card">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <h3 class="quick-action-title">Browse Courses</h3>
+                            <p class="quick-action-description">Explore our catalog and find your next course</p>
+                        </a>
+                        
+                        <a href="my-courses.html" class="quick-action-card">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <h3 class="quick-action-title">Start Learning</h3>
+                            <p class="quick-action-description">Begin your learning journey today</p>
+                        </a>
+                        
+                        <a href="certificates.html" class="quick-action-card">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h3 class="quick-action-title">View Certificates</h3>
+                            <p class="quick-action-description">Track your achievements</p>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Recent Activity Section -->
+                <section class="recent-activity">
+                    <div class="section-header">
+                        <h2>Recent Activity</h2>
+                    </div>
+                    
+                    <div class="activity-list">
+                        <div class="empty-state">
+                            <i class="far fa-clock"></i>
+                            <p>No recent activity</p>
+                            <p style="font-size: 0.9rem; margin-top: 8px;">Start learning to see your activity here</p>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        // ========================================
+        // Update User Interface Elements
+        // ========================================
+        function updateUserInterface(user) {
+            // Update sidebar
+            const sidebarName = document.getElementById('sidebarName');
+            const sidebarAvatar = document.getElementById('sidebarAvatar');
+            const headerAvatar = document.getElementById('headerAvatar');
+            
+            if (sidebarName) sidebarName.textContent = user.name;
+            if (sidebarAvatar) sidebarAvatar.textContent = user.avatar || user.name.substring(0, 2).toUpperCase();
+            if (headerAvatar) headerAvatar.textContent = user.avatar || user.name.substring(0, 2).toUpperCase();
+        }
+
+        // ========================================
+        // Event Listeners
+        // ========================================
+        function initializeEventListeners() {
+            // Menu toggle for mobile
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 1024) {
+                    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                        sidebar.classList.remove('active');
+                    }
+                }
+            });
+            
+            // Logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleLogout();
+                });
+            }
+            
+            // Search functionality
+            const searchInput = document.querySelector('.search-box input');
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce(handleSearch, 300));
+            }
+            
+            // Notifications click
+            const notifications = document.querySelector('.notifications');
+            if (notifications) {
+                notifications.addEventListener('click', () => {
+                    alert('No new notifications');
+                });
+            }
+        }
+
+        // ========================================
+        // Utility Functions
+        // ========================================
+
+        /**
+         * Handle user logout
+         */
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear any stored user data
+                localStorage.removeItem('lms_user');
+                localStorage.removeItem('access_token');
+                
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
+        }
+
+        /**
+         * Handle search with debounce
+         * @param {Event} e - Input event
+         */
+        function handleSearch(e) {
+            const query = e.target.value.trim();
+            if (query.length > 2) {
+                console.log('Searching for:', query);
+                // In production, make API call or filter courses
+            }
+        }
+
+        /**
+         * Update cart badge count
+         */
+        function updateCartBadge() {
+            const cartBadge = document.getElementById('cartBadge');
+            if (cartBadge) {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                cartBadge.textContent = cart.length;
+                cartBadge.style.display = cart.length > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        /**
+         * Debounce function to limit function calls
+         * @param {Function} func - Function to debounce
+         * @param {number} wait - Wait time in milliseconds
+         * @returns {Function} Debounced function
+         */
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // ========================================
+        // Initialize
+        // ========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            renderDashboard();
+            initializeEventListeners();
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>
