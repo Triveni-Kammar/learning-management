@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Player - CodeCanvas</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7b2eda;
+            --primary-light: #f0e6ff;
+            --primary-dark: #5b1fa8;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --bg-color: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        /* Main Layout */
+        .player-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .player-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+        }
+
+        /* Video Player Section */
+        .video-section {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .video-player {
+            width: 100%;
+            background: #000;
+            position: relative;
+        }
+
+        .video-player iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+        }
+
+        .course-info {
+            padding: 24px;
+        }
+
+        .course-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .course-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .meta-item i {
+            color: var(--primary);
+        }
+
+        .course-description {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border-light);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #9f4eda);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        /* Sidebar - Course Content */
+        .course-content-sidebar {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-color);
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .sidebar-header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .lectures-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .lecture-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .lecture-item:hover {
+            background: var(--bg-color);
+        }
+
+        .lecture-item.active {
+            background: var(--primary-light);
+            border-left: 3px solid var(--primary);
+        }
+
+        .lecture-item.completed {
+            opacity: 0.7;
+        }
+
+        .lecture-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .lecture-item.completed .lecture-icon {
+            background: var(--success);
+            color: white;
+        }
+
+        .lecture-info {
+            flex: 1;
+        }
+
+        .lecture-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .lecture-duration {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .lecture-status {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .lecture-status.completed {
+            color: var(--success);
+        }
+
+        .lecture-status.locked {
+            color: var(--text-light);
+        }
+
+        /* Mark Complete Button */
+        .mark-complete-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), #9f4eda);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mark-complete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .mark-complete-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .player-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .video-player iframe {
+                height: 250px;
+            }
+            
+            .course-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span>Code</span>Canvas</a>
+            <a href="my-courses.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to My Courses
+            </a>
+        </div>
+    </nav>
+
+    <div class="player-container" id="playerContainer">
+        <div class="loading-state empty-state">
+            <i class="fas fa-spinner fa-spin"></i>
+            <h3>Loading Course...</h3>
+            <p>Please wait while we load your course content.</p>
+        </div>
+    </div>
+
+    <script>
+        // Sample course data structure
+        const courseData = {
+            1: {
+                id: 1,
+                title: "Complete Web Development Bootcamp",
+                description: "Learn HTML, CSS, JavaScript, React, Node.js, and more. Build real-world projects and become a full-stack developer.",
+                instructor: "Sarah Johnson",
+                duration: "42 hours",
+                level: "Beginner to Advanced",
+                thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=200&fit=crop",
+                videoUrl: "https://www.youtube.com/embed/Vi9bxu-M-ag",
+                lectures: [
+                    { id: 1, title: "Introduction to Web Development", duration: "15:30", videoId: "Vi9bxu-M-ag", completed: false },
+                    { id: 2, title: "HTML Basics", duration: "25:45", videoId: "pQN-pnXPaVg", completed: false },
+                    { id: 3, title: "CSS Fundamentals", duration: "32:20", videoId: "1Rs2ND1ryYc", completed: false },
+                    { id: 4, title: "JavaScript Essentials", duration: "45:10", videoId: "W6NZfCO5SIk", completed: false },
+                    { id: 5, title: "React Introduction", duration: "38:15", videoId: "nTeuhbP7wdE", completed: false },
+                    { id: 6, title: "Node.js Basics", duration: "42:30", videoId: "ENrzD9HA0e4", completed: false },
+                    { id: 7, title: "Building Your First Project", duration: "55:20", videoId: "pQN-pnXPaVg", completed: false }
+                ]
+            },
+            2: {
+                id: 2,
+                title: "Advanced React & Next.js",
+                description: "Master React hooks, context API, Next.js framework, server-side rendering, and build production-ready applications.",
+                instructor: "Michael Chen",
+                duration: "35 hours",
+                level: "Intermediate to Advanced",
+                thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=200&fit=crop",
+                videoUrl: "https://www.youtube.com/embed/pQN-pnXPaVg",
+                lectures: [
+                    { id: 1, title: "React Hooks Deep Dive", duration: "28:15", videoId: "pQN-pnXPaVg", completed: false },
+                    { id: 2, title: "Context API Mastery", duration: "35:20", videoId: "Vi9bxu-M-ag", completed: false },
+                    { id: 3, title: "Next.js Introduction", duration: "42:10", videoId: "1Rs2ND1ryYc", completed: false },
+                    { id: 4, title: "Server Side Rendering", duration: "38:45", videoId: "W6NZfCO5SIk", completed: false },
+                    { id: 5, title: "API Routes in Next.js", duration: "45:30", videoId: "nTeuhbP7wdE", completed: false }
+                ]
+            }
+        };
+
+        let currentCourse = null;
+        let currentLectureIndex = 0;
+        let currentCourseId = null;
+
+        // Get course ID from URL
+        function getCourseIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return parseInt(urlParams.get('id'));
+        }
+
+        // Load course progress from localStorage
+        function loadCourseProgress(courseId) {
+            const savedProgress = localStorage.getItem(`course_progress_${courseId}`);
+            if (savedProgress) {
+                return JSON.parse(savedProgress);
+            }
+            return { completedLectures: [], progress: 0 };
+        }
+
+        // Save course progress
+        function saveCourseProgress(courseId, completedLectures) {
+            const progress = Math.round((completedLectures.length / currentCourse.lectures.length) * 100);
+            const progressData = { completedLectures, progress };
+            localStorage.setItem(`course_progress_${courseId}`, JSON.stringify(progressData));
+            
+            // Also update enrolled courses progress
+            updateEnrolledCourseProgress(courseId, progress);
+            
+            return progress;
+        }
+
+        // Update enrolled courses in localStorage
+        function updateEnrolledCourseProgress(courseId, progress) {
+            let enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses')) || [];
+            const courseIndex = enrolledCourses.findIndex(c => c.id === courseId);
+            
+            if (courseIndex !== -1) {
+                enrolledCourses[courseIndex].progress = progress;
+                localStorage.setItem('enrolledCourses', JSON.stringify(enrolledCourses));
+            }
+            
+            // Also update purchased courses list
+            let purchasedCourses = JSON.parse(localStorage.getItem('purchasedCoursesList')) || [];
+            const purchasedIndex = purchasedCourses.findIndex(c => c.id === courseId);
+            if (purchasedIndex !== -1) {
+                purchasedCourses[purchasedIndex].progress = progress;
+                localStorage.setItem('purchasedCoursesList', JSON.stringify(purchasedCourses));
+            }
+        }
+
+        // Mark lecture as complete
+        function markLectureComplete(lectureId) {
+            if (!currentCourse) return;
+            
+            const progress = loadCourseProgress(currentCourse.id);
+            if (!progress.completedLectures.includes(lectureId)) {
+                progress.completedLectures.push(lectureId);
+                const newProgress = saveCourseProgress(currentCourse.id, progress.completedLectures);
+                
+                // Update UI
+                updateLectureStatus(lectureId, true);
+                updateProgressBar(newProgress);
+                
+                showNotification('Lecture marked as complete! 🎉', 'success');
+                
+                // Check if all lectures are completed
+                if (progress.completedLectures.length === currentCourse.lectures.length) {
+                    showNotification('Congratulations! You completed the course! 🏆', 'success');
+                }
+            } else {
+                showNotification('Lecture already completed', 'info');
+            }
+        }
+
+        // Update lecture status in UI
+        function updateLectureStatus(lectureId, completed) {
+            const lectureElement = document.querySelector(`.lecture-item[data-lecture-id="${lectureId}"]`);
+            if (lectureElement) {
+                if (completed) {
+                    lectureElement.classList.add('completed');
+                    const statusIcon = lectureElement.querySelector('.lecture-status');
+                    if (statusIcon) {
+                        statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                        statusIcon.classList.add('completed');
+                    }
+                    const lectureIcon = lectureElement.querySelector('.lecture-icon');
+                    if (lectureIcon) {
+                        lectureIcon.style.background = '#10b981';
+                        lectureIcon.style.color = 'white';
+                    }
+                }
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar(progress) {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            if (progressFill && progressText) {
+                progressFill.style.width = `${progress}%`;
+                progressText.textContent = `${progress}% Complete`;
+            }
+        }
+
+        // Load lecture
+        function loadLecture(index) {
+            if (!currentCourse || !currentCourse.lectures[index]) return;
+            
+            currentLectureIndex = index;
+            const lecture = currentCourse.lectures[index];
+            const videoId = lecture.videoId;
+            const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            
+            // Update video player
+            const videoPlayer = document.getElementById('videoPlayer');
+            if (videoPlayer) {
+                videoPlayer.src = videoUrl;
+            }
+            
+            // Update active lecture in sidebar
+            document.querySelectorAll('.lecture-item').forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Update mark complete button
+            const markBtn = document.getElementById('markCompleteBtn');
+            if (markBtn) {
+                const progress = loadCourseProgress(currentCourse.id);
+                const isCompleted = progress.completedLectures.includes(lecture.id);
+                if (isCompleted) {
+                    markBtn.disabled = true;
+                    markBtn.innerHTML = '<i class="fas fa-check"></i> Lecture Completed';
+                } else {
+                    markBtn.disabled = false;
+                    markBtn.innerHTML = '<i class="fas fa-check-circle"></i> Mark as Complete';
+                }
+            }
+        }
+
+        // Render course player
+        function renderCoursePlayer(course) {
+            currentCourse = course;
+            const progress = loadCourseProgress(course.id);
+            
+            // Mark completed lectures
+            course.lectures.forEach(lecture => {
+                if (progress.completedLectures.includes(lecture.id)) {
+                    lecture.completed = true;
+                }
+            });
+            
+            const lecturesHtml = course.lectures.map((lecture, index) => `
+                <div class="lecture-item" data-lecture-id="${lecture.id}" onclick="loadLecture(${index})">
+                    <div class="lecture-icon">
+                        <i class="fas ${lecture.completed ? 'fa-check-circle' : 'fa-play'}"></i>
+                    </div>
+                    <div class="lecture-info">
+                        <div class="lecture-title">${escapeHtml(lecture.title)}</div>
+                        <div class="lecture-duration">${lecture.duration}</div>
+                    </div>
+                    <div class="lecture-status ${lecture.completed ? 'completed' : ''}">
+                        ${lecture.completed ? '<i class="fas fa-check-circle"></i>' : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+            const html = `
+                <div class="player-grid">
+                    <!-- Video Player Section -->
+                    <div class="video-section">
+                        <div class="video-player">
+                            <iframe id="videoPlayer" src="https://www.youtube.com/embed/${course.lectures[0].videoId}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="course-info">
+                            <h1 class="course-title">${escapeHtml(course.title)}</h1>
+                            <div class="course-meta">
+                                <span class="meta-item"><i class="fas fa-user-graduate"></i> ${escapeHtml(course.instructor)}</span>
+                                <span class="meta-item"><i class="far fa-clock"></i> ${course.duration}</span>
+                                <span class="meta-item"><i class="fas fa-chart-line"></i> ${course.level}</span>
+                            </div>
+                            <p class="course-description">${escapeHtml(course.description)}</p>
+                            
+                            <div class="progress-section">
+                                <div class="progress-label">
+                                    <span>Course Progress</span>
+                                    <span id="progressText">${progress.progress}% Complete</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill" style="width: ${progress.progress}%"></div>
+                                </div>
+                            </div>
+                            
+                            <button class="mark-complete-btn" id="markCompleteBtn" onclick="markLectureComplete(${course.lectures[0].id})">
+                                <i class="fas fa-check-circle"></i>
+                                Mark as Complete
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Course Content Sidebar -->
+                    <div class="course-content-sidebar">
+                        <div class="sidebar-header">
+                            <h3>Course Content</h3>
+                            <p>${course.lectures.length} lectures • ${course.duration}</p>
+                        </div>
+                        <div class="lectures-list">
+                            ${lecturesHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('playerContainer').innerHTML = html;
+            
+            // Load first lecture
+            loadLecture(0);
+        }
+
+        // Show error state
+        function showError() {
+            document.getElementById('playerContainer').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Course Not Found</h3>
+                    <p>The course you're looking for doesn't exist or you don't have access to it.</p>
+                    <a href="my-courses.html" class="btn-primary">Go to My Courses</a>
+                </div>
+            `;
+        }
+
+        // Load course
+        function loadCourse() {
+            const courseId = getCourseIdFromUrl();
+            currentCourseId = courseId;
+            
+            if (!courseId) {
+                showError();
+                return;
+            }
+            
+            // First check if course exists in purchased courses
+            let purchasedCourses = JSON.parse(localStorage.getItem('purchasedCoursesList')) || [];
+            let enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses')) || [];
+            
+            let course = purchasedCourses.find(c => c.id === courseId) || 
+                        enrolledCourses.find(c => c.id === courseId);
+            
+            if (course && courseData[courseId]) {
+                // Merge saved data with course structure
+                const fullCourse = {
+                    ...courseData[courseId],
+                    ...course,
+                    lectures: courseData[courseId].lectures.map(lecture => ({
+                        ...lecture,
+                        completed: course.completedLectures?.includes(lecture.id) || false
+                    }))
+                };
+                renderCoursePlayer(fullCourse);
+            } else if (courseData[courseId]) {
+                renderCoursePlayer(courseData[courseId]);
+            } else {
+                showError();
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            const icon = type === 'success' ? 'fa-check-circle' : (type === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle');
+            notification.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+            if (type === 'error') notification.style.background = '#ef4444';
+            if (type === 'info') notification.style.background = '#3b82f6';
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadCourse);
+    </script>
+</body>
+</html>

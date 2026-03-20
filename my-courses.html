@@ -127,16 +127,6 @@
             border-top: 1px solid var(--border-light);
         }
 
-        .badge {
-            background: var(--primary);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 2px 6px;
-            border-radius: 12px;
-            margin-left: auto;
-        }
-
         .sidebar-footer {
             padding: 20px 24px;
             border-top: 1px solid var(--border-light);
@@ -495,6 +485,26 @@
             box-shadow: var(--shadow-md);
         }
 
+        .loading-spinner {
+            text-align: center;
+            padding: 60px;
+            grid-column: 1 / -1;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -530,6 +540,10 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+            
+            .search-box {
+                width: 200px;
+            }
         }
     </style>
 </head>
@@ -559,13 +573,6 @@
                         <a href="certificates.html">
                             <i class="fas fa-certificate"></i>
                             <span>Certificates</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="cart.html">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span>Cart</span>
-                            <span class="badge" id="cartBadge">0</span>
                         </a>
                     </li>
                 </ul>
@@ -610,7 +617,7 @@
                 <div class="navbar-right">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search my courses...">
+                        <input type="text" id="searchInput" placeholder="Search my courses...">
                     </div>
                     
                     <div class="notifications">
@@ -624,22 +631,48 @@
 
             <div class="courses-container">
                 <div class="page-header">
-                    <h1>My Courses</h1>
+                    <h1>My Purchased Courses</h1>
                     <div class="filter-tabs">
-                        <span class="filter-tab active" data-filter="all">All</span>
+                        <span class="filter-tab active" data-filter="all">All Courses</span>
                         <span class="filter-tab" data-filter="in-progress">In Progress</span>
                         <span class="filter-tab" data-filter="completed">Completed</span>
                     </div>
                 </div>
 
                 <div class="courses-grid" id="coursesGrid">
-                    <!-- Always show empty state - NO COURSES EVER -->
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading your purchased courses...</p>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
+        // IMPORTANT: Clear any sample/demo courses immediately
+        function clearAllSampleCourses() {
+            let enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses')) || [];
+            
+            // Filter out any courses that don't have a valid purchase from checkout
+            // Only keep courses that were purchased through the payment process
+            const validPurchasedCourses = enrolledCourses.filter(course => {
+                // Check if course has a valid purchase timestamp and came from checkout
+                return course.purchasedFromCheckout === true || 
+                       (course.purchaseDate && course.purchaseDate !== 'Just enrolled' && 
+                        course.purchaseDate !== 'Just purchased' &&
+                        course.id && typeof course.id === 'number');
+            });
+            
+            // If there are any invalid courses, remove them
+            if (validPurchasedCourses.length !== enrolledCourses.length) {
+                console.log('Removing sample/demo courses. Found:', enrolledCourses.length, 'Removed:', enrolledCourses.length - validPurchasedCourses.length);
+                localStorage.setItem('enrolledCourses', JSON.stringify(validPurchasedCourses));
+            }
+            
+            return validPurchasedCourses;
+        }
+
         // Load user data
         function loadUserData() {
             const user = JSON.parse(localStorage.getItem('lms_user')) || {
@@ -648,59 +681,304 @@
                 avatar: 'JD'
             };
 
+            const avatarText = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
             document.getElementById('sidebarName').textContent = user.name;
-            document.getElementById('sidebarAvatar').textContent = user.avatar;
-            document.getElementById('headerAvatar').textContent = user.avatar;
+            document.getElementById('sidebarAvatar').textContent = avatarText;
+            document.getElementById('headerAvatar').textContent = avatarText;
         }
 
-        // ALWAYS show empty state - no courses ever
-        function loadCourses() {
+        // Load ONLY purchased courses (no samples/demos)
+        function loadPurchasedCourses(filter = 'all', searchTerm = '') {
             const grid = document.getElementById('coursesGrid');
             
-            // Always show empty state regardless of any data
+            // Show loading state
             grid.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-book-open"></i>
-                    <h3>No courses available</h3>
-                    <p>You haven't enrolled in any courses yet</p>
-                    <a href="courses.html" class="btn-primary">Browse Courses</a>
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading your purchased courses...</p>
                 </div>
             `;
-        }
-
-        // Filter tabs (they do nothing now since there are no courses)
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                // Always show empty state regardless of filter
-                loadCourses();
-            });
-        });
-
-        // Menu toggle
-        document.getElementById('menuToggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
-
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('lms_user');
-                localStorage.removeItem('access_token');
-                window.location.href = 'login.html';
-            }
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUserData();
-            loadCourses(); // This will always show empty state
             
-            // Update cart badge
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            document.getElementById('cartBadge').textContent = cart.length;
+            setTimeout(() => {
+                try {
+                    // Get purchased courses from localStorage
+                    let purchasedCourses = JSON.parse(localStorage.getItem('purchasedCoursesList')) || [];
+                    
+                    // Also check enrolledCourses (for backward compatibility)
+                    let enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses')) || [];
+                    
+                    // Combine and deduplicate, but ONLY keep courses with purchase proof
+                    let allCourses = [...purchasedCourses];
+                    
+                    // Add from enrolledCourses only if they have purchase proof
+                    enrolledCourses.forEach(course => {
+                        const exists = allCourses.some(c => c.id === course.id);
+                        if (!exists && (course.purchasedFromCheckout === true || course.paymentId)) {
+                            allCourses.push(course);
+                        }
+                    });
+                    
+                    // Remove any sample/demo courses
+                    allCourses = allCourses.filter(course => {
+                        // Don't show sample courses
+                        const isSample = course.isSample === true || 
+                                       course.title === "Complete Web Development Bootcamp" && !course.paymentId ||
+                                       course.title === "Advanced React & Next.js" && !course.paymentId;
+                        return !isSample;
+                    });
+                    
+                    console.log('Purchased courses to display:', allCourses);
+                    
+                    // Check for newly purchased courses in sessionStorage (from payment success page)
+                    const newlyPurchased = JSON.parse(sessionStorage.getItem('newlyPurchasedCourses'));
+                    if (newlyPurchased && newlyPurchased.length > 0) {
+                        console.log('Adding newly purchased courses:', newlyPurchased);
+                        
+                        // Add newly purchased courses
+                        newlyPurchased.forEach(course => {
+                            const exists = allCourses.some(c => c.id === course.id);
+                            if (!exists) {
+                                const purchasedCourse = {
+                                    id: course.id,
+                                    title: course.title,
+                                    thumbnail: course.thumbnail,
+                                    category: course.category || 'Web Development',
+                                    price: course.price || 49.99,
+                                    purchaseDate: new Date().toISOString(),
+                                    progress: 0,
+                                    instructor: course.instructor || 'CodeCanvas Team',
+                                    rating: course.rating || 4.5,
+                                    duration: course.duration || '10 hours',
+                                    videoId: course.videoId,
+                                    purchasedFromCheckout: true,
+                                    paymentId: 'PAY-' + Date.now()
+                                };
+                                allCourses.push(purchasedCourse);
+                            }
+                        });
+                        
+                        // Save to localStorage
+                        localStorage.setItem('purchasedCoursesList', JSON.stringify(allCourses));
+                        // Clear session storage
+                        sessionStorage.removeItem('newlyPurchasedCourses');
+                    }
+                    
+                    // Filter based on progress
+                    let filteredCourses = [...allCourses];
+                    
+                    if (filter === 'in-progress') {
+                        filteredCourses = allCourses.filter(course => course.progress > 0 && course.progress < 100);
+                    } else if (filter === 'completed') {
+                        filteredCourses = allCourses.filter(course => course.progress === 100);
+                    }
+                    
+                    // Apply search filter
+                    if (searchTerm && searchTerm.trim()) {
+                        filteredCourses = filteredCourses.filter(course => 
+                            course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            (course.category && course.category.toLowerCase().includes(searchTerm.toLowerCase()))
+                        );
+                    }
+                    
+                    // Show courses or empty state
+                    if (filteredCourses.length === 0) {
+                        let emptyMessage = '';
+                        if (allCourses.length === 0) {
+                            emptyMessage = `
+                                <div class="empty-state">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <h3>No Purchased Courses Yet</h3>
+                                    <p>You haven't purchased any courses yet. Browse our courses and start learning!</p>
+                                    <a href="courses.html" class="btn-primary">Browse Courses</a>
+                                </div>
+                            `;
+                        } else if (filter === 'in-progress') {
+                            emptyMessage = `
+                                <div class="empty-state">
+                                    <i class="fas fa-play-circle"></i>
+                                    <h3>No Courses In Progress</h3>
+                                    <p>Start any of your purchased courses to see them here</p>
+                                    <a href="courses.html" class="btn-primary">Browse Courses</a>
+                                </div>
+                            `;
+                        } else if (filter === 'completed') {
+                            emptyMessage = `
+                                <div class="empty-state">
+                                    <i class="fas fa-trophy"></i>
+                                    <h3>No Completed Courses Yet</h3>
+                                    <p>Keep learning and complete your purchased courses to earn certificates!</p>
+                                    <a href="courses.html" class="btn-primary">Continue Learning</a>
+                                </div>
+                            `;
+                        } else {
+                            emptyMessage = `
+                                <div class="empty-state">
+                                    <i class="fas fa-search"></i>
+                                    <h3>No Matching Courses Found</h3>
+                                    <p>Try a different search term</p>
+                                </div>
+                            `;
+                        }
+                        grid.innerHTML = emptyMessage;
+                        return;
+                    }
+                    
+                    // Display purchased courses grid
+                    grid.innerHTML = filteredCourses.map(course => `
+                        <div class="course-card" onclick="openCourse(${course.id})">
+                            <div class="course-thumbnail">
+                                <img src="${course.thumbnail || 'https://via.placeholder.com/400x200/7b2eda/ffffff?text=' + encodeURIComponent(course.title.substring(0, 20))}" 
+                                     alt="${escapeHtml(course.title)}"
+                                     onerror="this.src='https://via.placeholder.com/400x200/7b2eda/ffffff?text=Course'">
+                                <span class="course-category">${escapeHtml(course.category || 'Course')}</span>
+                                ${course.progress > 0 ? 
+                                    `<span class="course-progress-badge">${course.progress}%</span>` : 
+                                    `<span class="course-progress-badge">New</span>`
+                                }
+                            </div>
+                            <div class="course-content">
+                                <h3 class="course-title">${escapeHtml(course.title)}</h3>
+                                <div class="course-instructor">
+                                    <i class="fas fa-user-graduate"></i>
+                                    <span>${escapeHtml(course.instructor || 'CodeCanvas Team')}</span>
+                                </div>
+                                <div class="course-meta">
+                                    <span><i class="far fa-clock"></i> ${course.duration || '10 hours'}</span>
+                                    <span class="course-rating">
+                                        <i class="fas fa-star"></i> ${course.rating || '4.5'}
+                                    </span>
+                                </div>
+                                <div class="course-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${course.progress || 0}%"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>${course.progress || 0}% Complete</span>
+                                        <span><i class="fas fa-calendar-alt"></i> ${formatDate(course.purchaseDate)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                } catch (error) {
+                    console.error('Error loading purchased courses:', error);
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Error Loading Courses</h3>
+                            <p>There was an error loading your purchased courses. Please refresh the page.</p>
+                            <button onclick="location.reload()" class="btn-primary">Refresh Page</button>
+                        </div>
+                    `;
+                }
+            }, 500);
+        }
+        
+        // Format date function
+        function formatDate(dateString) {
+            if (!dateString) return 'Just purchased';
+            try {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 0) return 'Today';
+                if (diffDays === 1) return 'Yesterday';
+                if (diffDays < 7) return `${diffDays} days ago`;
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            } catch(e) {
+                return 'Just purchased';
+            }
+        }
+        
+        // Open course function
+        function openCourse(courseId) {
+            window.location.href = `course-player.html?id=${courseId}`;
+        }
+        
+        // Escape HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Search functionality
+        let currentFilter = 'all';
+        let currentSearchTerm = '';
+        
+        function refreshCourses() {
+            loadPurchasedCourses(currentFilter, currentSearchTerm);
+        }
+        
+        // Initialize event listeners
+        function initEventListeners() {
+            // Filter tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.getAttribute('data-filter');
+                    refreshCourses();
+                });
+            });
+            
+            // Search input
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    currentSearchTerm = e.target.value;
+                    refreshCourses();
+                });
+            }
+            
+            // Menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    document.getElementById('sidebar').classList.toggle('active');
+                });
+            }
+            
+            // Logout
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        localStorage.removeItem('lms_user');
+                        localStorage.removeItem('access_token');
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('My Courses page loaded - showing only purchased courses');
+            
+            // Clear any sample/demo courses
+            clearAllSampleCourses();
+            
+            loadUserData();
+            initEventListeners();
+            
+            // Load only purchased courses
+            loadPurchasedCourses('all', '');
+            
+            // Listen for storage events
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'purchasedCoursesList' || e.key === 'enrolledCourses') {
+                    console.log('Storage event detected - refreshing courses');
+                    refreshCourses();
+                }
+            });
         });
     </script>
 </body>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - CodeCanvas</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --primary: #7b2eda;
+            --primary-dark: #5b1fa8;
+            --success: #10b981;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #e2e8f0;
+            --background: #f8fafc;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.7rem;
+            font-weight: 800;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 80px auto;
+            padding: 0 24px;
+            flex: 1;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 32px;
+            padding: 48px 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: scaleIn 0.5s ease-out 0.2s both;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-icon i {
+            font-size: 48px;
+            color: white;
+        }
+
+        .success-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .success-message {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .order-details {
+            background: var(--background);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .order-details h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .order-details h3 i {
+            color: var(--primary);
+        }
+
+        .order-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-info:last-child {
+            border-bottom: none;
+        }
+
+        .order-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .order-value {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .order-value.success {
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        .courses-list {
+            margin-top: 16px;
+        }
+
+        .course-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .course-item i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .course-name {
+            flex: 1;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--primary), #9f4eda);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(123, 46, 218, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(123, 46, 218, 0.4);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            color: var(--primary);
+            padding: 14px 32px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            background: white;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                margin: 40px auto;
+            }
+            
+            .success-card {
+                padding: 32px 24px;
+            }
+            
+            .success-title {
+                font-size: 1.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><span>Code</span>Canvas</a>
+            <div class="nav-links">
+                <a href="courses.html"><i class="fas fa-book"></i> Courses</a>
+                <a href="my-courses.html"><i class="fas fa-user-graduate"></i> My Courses</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h1 class="success-title">Payment Successful! 🎉</h1>
+            <p class="success-message">
+                Thank you for your purchase! Your courses have been added to your dashboard.
+                A confirmation email has been sent to your registered email address.
+            </p>
+
+            <div class="order-details" id="orderDetails">
+                <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                <div id="orderSummaryContent">
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading order details...
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="my-courses.html" class="btn-primary" id="goToCoursesBtn">
+                    <i class="fas fa-chalkboard-user"></i>
+                    Go to My Courses
+                </a>
+                <a href="courses.html" class="btn-secondary">
+                    <i class="fas fa-book-open"></i>
+                    Browse More Courses
+                </a>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+                <p style="color: var(--text-muted); font-size: 0.85rem;">
+                    <i class="fas fa-envelope"></i> Need help? Contact us at 
+                    <a href="mailto:support@codecanvas.com" style="color: var(--primary); text-decoration: none;">support@codecanvas.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2024 CodeCanvas. All rights reserved. Happy Learning! 🚀</p>
+    </div>
+
+    <script>
+        // Function to get cart data from multiple sources
+        function getCartData() {
+            // Try to get from sessionStorage first (from checkout page)
+            let cart = sessionStorage.getItem('checkoutCart');
+            if (cart) {
+                console.log('Found cart in sessionStorage:', JSON.parse(cart));
+                return JSON.parse(cart);
+            }
+            
+            // Try to get from localStorage
+            cart = localStorage.getItem('cart');
+            if (cart) {
+                console.log('Found cart in localStorage:', JSON.parse(cart));
+                return JSON.parse(cart);
+            }
+            
+            // Try to get from purchasedCourses session
+            cart = sessionStorage.getItem('purchasedCourses');
+            if (cart) {
+                console.log('Found cart in purchasedCourses session:', JSON.parse(cart));
+                return JSON.parse(cart);
+            }
+            
+            console.log('No cart data found anywhere');
+            return [];
+        }
+        
+        // Save purchased courses permanently
+        function savePurchasedCourses(cart) {
+            if (!cart || cart.length === 0) {
+                console.log('No courses to save');
+                return false;
+            }
+            
+            console.log('Saving purchased courses:', cart);
+            
+            // Get existing purchased courses
+            let purchasedCourses = JSON.parse(localStorage.getItem('purchasedCoursesList')) || [];
+            
+            // Add new purchases
+            cart.forEach(course => {
+                const exists = purchasedCourses.some(c => c.id === course.id);
+                if (!exists) {
+                    const purchasedCourse = {
+                        id: course.id,
+                        title: course.title,
+                        thumbnail: course.thumbnail,
+                        category: course.category || 'Web Development',
+                        price: course.price || 49.99,
+                        purchaseDate: new Date().toISOString(),
+                        progress: 0,
+                        instructor: course.instructor || 'CodeCanvas Team',
+                        rating: course.rating || 4.5,
+                        duration: course.duration || '10 hours',
+                        videoId: course.videoId,
+                        purchasedFromCheckout: true,
+                        paymentId: 'PAY-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+                        orderDate: new Date().toLocaleString()
+                    };
+                    purchasedCourses.push(purchasedCourse);
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('purchasedCoursesList', JSON.stringify(purchasedCourses));
+            localStorage.setItem('enrolledCourses', JSON.stringify(purchasedCourses));
+            
+            // Also save to sessionStorage for immediate display
+            sessionStorage.setItem('newlyPurchasedCourses', JSON.stringify(cart));
+            sessionStorage.setItem('justPurchased', 'true');
+            
+            console.log('Saved purchased courses:', purchasedCourses);
+            return true;
+        }
+        
+        // Display order summary
+        function displayOrderSummary() {
+            const cart = getCartData();
+            
+            if (!cart || cart.length === 0) {
+                document.getElementById('orderSummaryContent').innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>No order information found. Please contact support if you made a purchase.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Save the purchased courses
+            savePurchasedCourses(cart);
+            
+            // Generate order details
+            const orderId = 'CC-' + Date.now().toString().slice(-8) + '-' + Math.floor(Math.random() * 1000);
+            const transactionDate = new Date().toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Get payment method
+            const paymentMethod = sessionStorage.getItem('checkoutPaymentMethod') || 'Credit/Debit Card';
+            const paymentMethodDisplay = {
+                'card': 'Credit/Debit Card',
+                'upi': 'UPI Payment',
+                'netbanking': 'Net Banking'
+            }[paymentMethod] || 'Credit/Debit Card';
+            
+            // Calculate totals
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += (item.price || 49.99);
+            });
+            const tax = subtotal * 0.18;
+            const total = subtotal + tax;
+            
+            // Get total from sessionStorage if available
+            const savedTotal = sessionStorage.getItem('checkoutTotal');
+            const finalTotal = savedTotal ? parseFloat(savedTotal) : total;
+            
+            const orderSummaryHtml = `
+                <div class="order-info">
+                    <span class="order-label">Order ID:</span>
+                    <span class="order-value">${orderId}</span>
+                </div>
+                <div class="order-info">
+                    <span class="order-label">Transaction Date:</span>
+                    <span class="order-value">${transactionDate}</span>
+                </div>
+                <div class="order-info">
+                    <span class="order-label">Payment Method:</span>
+                    <span class="order-value">${paymentMethodDisplay}</span>
+                </div>
+                <div class="order-info">
+                    <span class="order-label">Subtotal:</span>
+                    <span class="order-value">$${subtotal.toFixed(2)}</span>
+                </div>
+                <div class="order-info">
+                    <span class="order-label">Tax (18% GST):</span>
+                    <span class="order-value">$${tax.toFixed(2)}</span>
+                </div>
+                <div class="order-info">
+                    <span class="order-label">Total Amount:</span>
+                    <span class="order-value success">$${finalTotal.toFixed(2)}</span>
+                </div>
+                <div class="order-info">
+                    <span class="order-label">Courses Purchased:</span>
+                    <span class="order-value">${cart.length} course(s)</span>
+                </div>
+                <div class="courses-list">
+                    ${cart.map(course => `
+                        <div class="course-item">
+                            <i class="fas fa-code"></i>
+                            <span class="course-name">${escapeHtml(course.title)}</span>
+                            <span style="color: var(--primary); font-weight: 600;">$${(course.price || 49.99).toFixed(2)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.getElementById('orderSummaryContent').innerHTML = orderSummaryHtml;
+            
+            // Clear the cart from localStorage after successful save
+            localStorage.removeItem('cart');
+            
+            // Keep sessionStorage data for a bit longer for the next page
+            setTimeout(() => {
+                // Don't clear immediately, let the next page read it
+                console.log('Cart data preserved in sessionStorage for my-courses page');
+            }, 5000);
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#7b2eda', '#9f4eda', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'];
+            
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'fixed';
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = '-10px';
+                    confetti.style.borderRadius = '50%';
+                    confetti.style.pointerEvents = 'none';
+                    confetti.style.zIndex = '9999';
+                    confetti.style.animation = `fall ${Math.random() * 2 + 2}s linear forwards`;
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 20);
+            }
+        }
+        
+        // Add fall animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                0% {
+                    transform: translateY(-10px) rotate(0deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize page
+        function init() {
+            console.log('Payment success page loaded');
+            console.log('SessionStorage contents:', sessionStorage);
+            console.log('LocalStorage contents:', localStorage);
+            
+            // Display order summary (this will also save the courses)
+            displayOrderSummary();
+            
+            // Create confetti effect
+            setTimeout(() => {
+                createConfetti();
+            }, 300);
+        }
+        
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

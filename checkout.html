@@ -32,7 +32,6 @@
             min-height: 100vh;
         }
 
-        /* Navbar */
         .navbar {
             background: white;
             border-bottom: 1px solid var(--border);
@@ -76,7 +75,6 @@
             color: var(--primary);
         }
 
-        /* Main Content */
         .container {
             max-width: 1280px;
             margin: 40px auto;
@@ -102,7 +100,6 @@
             font-size: 1.1rem;
         }
 
-        /* Empty Cart */
         .empty-cart {
             text-align: center;
             padding: 60px 20px;
@@ -150,14 +147,12 @@
             box-shadow: 0 6px 16px rgba(123,46,218,0.4);
         }
 
-        /* Checkout Layout */
         .checkout-layout {
             display: grid;
             grid-template-columns: 1fr 380px;
             gap: 30px;
         }
 
-        /* Cart Items */
         .cart-items-section {
             background: white;
             border-radius: 20px;
@@ -214,6 +209,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .item-category i {
@@ -260,7 +256,6 @@
             background: #fee2e2;
         }
 
-        /* Order Summary */
         .order-summary {
             background: white;
             border-radius: 20px;
@@ -332,8 +327,60 @@
             background: var(--primary-dark);
         }
 
-        .payment-methods {
+        .payment-details-section {
             margin: 24px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .payment-details-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(123,46,218,0.1);
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .payment-methods {
+            margin: 24px 0 16px 0;
         }
 
         .payment-method {
@@ -382,7 +429,13 @@
             margin-top: 20px;
         }
 
-        .checkout-btn:hover {
+        .checkout-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .checkout-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(123,46,218,0.4);
         }
@@ -397,11 +450,6 @@
             font-size: 0.9rem;
         }
 
-        .secure-badge i {
-            color: var(--success);
-        }
-
-        /* Notification */
         .notification {
             position: fixed;
             top: 20px;
@@ -429,7 +477,6 @@
             }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .checkout-layout {
                 grid-template-columns: 1fr;
@@ -451,7 +498,6 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo"><span>Code</span>Canvas</a>
@@ -462,25 +508,25 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container">
         <div class="checkout-header">
             <h1>Checkout</h1>
             <p>Complete your purchase and start learning today</p>
         </div>
 
-        <!-- Cart Items Container -->
         <div id="checkoutContent"></div>
     </div>
 
     <script>
-        // Load cart from localStorage
+        let currentSubtotal = 0;
+        let currentTax = 0;
+        let currentTotal = 0;
+
         function loadCart() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const checkoutContent = document.getElementById('checkoutContent');
             
             if (cart.length === 0) {
-                // Show empty cart message
                 checkoutContent.innerHTML = `
                     <div class="empty-cart">
                         <i class="fas fa-shopping-cart"></i>
@@ -495,19 +541,17 @@
                 return;
             }
 
-            // Calculate totals
-            let subtotal = 0;
+            currentSubtotal = 0;
             cart.forEach(item => {
-                subtotal += item.price || 49.99;
+                currentSubtotal += item.price || 69.99;
             });
             
-            const tax = subtotal * 0.18; // 18% GST
-            const total = subtotal + tax;
+            currentTax = currentSubtotal * 0.18;
+            currentTotal = currentSubtotal + currentTax;
 
-            // Generate cart items HTML
             let cartItemsHtml = '';
             cart.forEach((item, index) => {
-                const price = item.price || 49.99;
+                const price = item.price || 69.99;
                 cartItemsHtml += `
                     <div class="cart-item" data-id="${item.id}">
                         <img src="${item.thumbnail || 'https://via.placeholder.com/120x80'}" 
@@ -515,10 +559,10 @@
                              class="item-image"
                              onerror="this.src='https://img.youtube.com/vi/${item.videoId || 'Vi9bxu-M-ag'}/hqdefault.jpg'">
                         <div class="item-details">
-                            <h3 class="item-title">${item.title}</h3>
+                            <h3 class="item-title">${escapeHtml(item.title)}</h3>
                             <div class="item-category">
                                 <i class="fas fa-folder"></i>
-                                ${item.category || 'Web Development'}
+                                ${escapeHtml(item.category || 'Web Development')}
                                 <span class="item-type">
                                     <i class="fas ${item.purchaseType === 'subscription' ? 'fa-crown' : 'fa-cart-shopping'}"></i>
                                     ${item.purchaseType === 'subscription' ? 'Subscription' : 'One-time purchase'}
@@ -536,10 +580,8 @@
                 `;
             });
 
-            // Show checkout layout with items
             checkoutContent.innerHTML = `
                 <div class="checkout-layout">
-                    <!-- Cart Items -->
                     <div class="cart-items-section">
                         <h2 class="section-title">
                             <i class="fas fa-shopping-cart" style="color: var(--primary); margin-right: 10px;"></i>
@@ -550,34 +592,33 @@
                         </div>
                     </div>
 
-                    <!-- Order Summary -->
                     <div class="order-summary">
                         <h2 class="summary-title">Order Summary</h2>
                         
                         <div class="summary-row">
                             <span>Subtotal (${cart.length} items)</span>
-                            <span>$${subtotal.toFixed(2)}</span>
+                            <span>$${currentSubtotal.toFixed(2)}</span>
                         </div>
                         
                         <div class="summary-row">
                             <span>Tax (18% GST)</span>
-                            <span>$${tax.toFixed(2)}</span>
+                            <span>$${currentTax.toFixed(2)}</span>
                         </div>
                         
                         <div class="summary-row total grand-total">
                             <span>Total</span>
-                            <span>$${total.toFixed(2)}</span>
+                            <span id="totalAmount">$${currentTotal.toFixed(2)}</span>
                         </div>
 
                         <div class="promo-code">
-                            <input type="text" placeholder="Enter promo code" id="promoCode">
+                            <input type="text" placeholder="Enter promo code (SAVE20)" id="promoCode">
                             <button class="apply-btn" onclick="applyPromo()">Apply</button>
                         </div>
 
                         <div class="payment-methods">
                             <h3 style="margin-bottom: 16px;">Payment Method</h3>
                             
-                            <label class="payment-method selected">
+                            <label class="payment-method selected" data-method="card">
                                 <input type="radio" name="payment" value="card" checked>
                                 <i class="fas fa-credit-card"></i>
                                 <div>
@@ -586,7 +627,7 @@
                                 </div>
                             </label>
 
-                            <label class="payment-method">
+                            <label class="payment-method" data-method="upi">
                                 <input type="radio" name="payment" value="upi">
                                 <i class="fas fa-mobile-alt"></i>
                                 <div>
@@ -595,7 +636,7 @@
                                 </div>
                             </label>
 
-                            <label class="payment-method">
+                            <label class="payment-method" data-method="netbanking">
                                 <input type="radio" name="payment" value="netbanking">
                                 <i class="fas fa-university"></i>
                                 <div>
@@ -605,9 +646,34 @@
                             </label>
                         </div>
 
+                        <div id="paymentDetailsContainer" class="payment-details-section">
+                            <div class="payment-details-title">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Card Details</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Cardholder Name</label>
+                                <input type="text" id="cardName" placeholder="John Doe" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label>Card Number</label>
+                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="off">
+                            </div>
+                            <div class="card-row">
+                                <div class="form-group">
+                                    <label>Expiry Date (MM/YY)</label>
+                                    <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label>CVV</label>
+                                    <input type="password" id="cvv" placeholder="123" maxlength="4" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+
                         <button class="checkout-btn" onclick="processCheckout()">
                             <i class="fas fa-lock"></i>
-                            Pay $${total.toFixed(2)}
+                            Pay $${currentTotal.toFixed(2)}
                         </button>
 
                         <div class="secure-badge">
@@ -617,47 +683,173 @@
                     </div>
                 </div>
             `;
+
+            attachPaymentMethodListeners();
+            attachCardInputFormatters();
         }
 
-        // Remove from cart
-        function removeFromCart(courseId) {
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            cart = cart.filter(item => item.id !== courseId);
-            localStorage.setItem('cart', JSON.stringify(cart));
+        function attachPaymentMethodListeners() {
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            const paymentContainer = document.getElementById('paymentDetailsContainer');
             
-            // Show notification
-            showNotification('Course removed from cart');
-            
-            // Reload cart display
-            loadCart();
-            
-            // Update cart count in navbar if exists
-            updateCartCount();
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    paymentMethods.forEach(m => m.classList.remove('selected'));
+                    this.classList.add('selected');
+                    const radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    
+                    const methodValue = radio.value;
+                    if (methodValue === 'card') {
+                        paymentContainer.innerHTML = `
+                            <div class="payment-details-title">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Card Details</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Cardholder Name</label>
+                                <input type="text" id="cardName" placeholder="John Doe" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label>Card Number</label>
+                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="off">
+                            </div>
+                            <div class="card-row">
+                                <div class="form-group">
+                                    <label>Expiry Date (MM/YY)</label>
+                                    <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label>CVV</label>
+                                    <input type="password" id="cvv" placeholder="123" maxlength="4" autocomplete="off">
+                                </div>
+                            </div>
+                        `;
+                        attachCardInputFormatters();
+                    } else if (methodValue === 'upi') {
+                        paymentContainer.innerHTML = `
+                            <div class="payment-details-title">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>UPI Details</span>
+                            </div>
+                            <div class="form-group">
+                                <label>UPI ID</label>
+                                <input type="text" id="upiId" placeholder="username@okhdfcbank" autocomplete="off">
+                            </div>
+                        `;
+                    } else if (methodValue === 'netbanking') {
+                        paymentContainer.innerHTML = `
+                            <div class="payment-details-title">
+                                <i class="fas fa-university"></i>
+                                <span>Net Banking Details</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Select Bank</label>
+                                <select id="bankSelect">
+                                    <option value="">Select a bank</option>
+                                    <option value="sbi">State Bank of India</option>
+                                    <option value="hdfc">HDFC Bank</option>
+                                    <option value="icici">ICICI Bank</option>
+                                    <option value="axis">Axis Bank</option>
+                                </select>
+                            </div>
+                        `;
+                    }
+                });
+            });
         }
 
-        // Apply promo code
-        function applyPromo() {
-            const promoCode = document.getElementById('promoCode').value;
-            if (promoCode.toUpperCase() === 'SAVE20') {
-                showNotification('Promo code applied! 20% discount');
-                // Recalculate with discount
-                // You can implement discount logic here
-            } else {
-                showNotification('Invalid promo code', 'error');
+        function attachCardInputFormatters() {
+            const cardNumberInput = document.getElementById('cardNumber');
+            if (cardNumberInput) {
+                cardNumberInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\s/g, '');
+                    if (value.length > 16) value = value.slice(0, 16);
+                    value = value.replace(/(\d{4})/g, '$1 ').trim();
+                    e.target.value = value;
+                });
+            }
+            
+            const expiryInput = document.getElementById('expiryDate');
+            if (expiryInput) {
+                expiryInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length >= 2) {
+                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                    }
+                    e.target.value = value;
+                });
             }
         }
 
-        // Process checkout
         function processCheckout() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
             if (cart.length === 0) {
                 showNotification('Your cart is empty!', 'error');
                 return;
             }
 
             // Get selected payment method
-            const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
+            const selectedPayment = document.querySelector('input[name="payment"]:checked')?.value || 'card';
             
+            // Get payment details for validation
+            let paymentDetails = {};
+            if (selectedPayment === 'card') {
+                const cardName = document.getElementById('cardName')?.value.trim();
+                const cardNumber = document.getElementById('cardNumber')?.value.replace(/\s/g, '');
+                const expiryDate = document.getElementById('expiryDate')?.value.trim();
+                const cvv = document.getElementById('cvv')?.value.trim();
+                
+                if (!cardName || !cardNumber || !expiryDate || !cvv) {
+                    showNotification('Please fill in all card details', 'error');
+                    return;
+                }
+                if (cardNumber.length < 15) {
+                    showNotification('Please enter a valid card number', 'error');
+                    return;
+                }
+                paymentDetails = { cardName, cardNumber, expiryDate, cvv };
+            } else if (selectedPayment === 'upi') {
+                const upiId = document.getElementById('upiId')?.value.trim();
+                if (!upiId || !upiId.includes('@')) {
+                    showNotification('Please enter a valid UPI ID', 'error');
+                    return;
+                }
+                paymentDetails = { upiId };
+            } else if (selectedPayment === 'netbanking') {
+                const bank = document.getElementById('bankSelect')?.value;
+                if (!bank) {
+                    showNotification('Please select a bank', 'error');
+                    return;
+                }
+                paymentDetails = { bank };
+            }
+            
+            console.log('Processing checkout with cart:', cart);
+            console.log('Payment method:', selectedPayment);
+            console.log('Payment details:', paymentDetails);
+
+            // CRITICAL: Save cart data to sessionStorage
+            sessionStorage.setItem('checkoutCart', JSON.stringify(cart));
+            sessionStorage.setItem('checkoutPaymentMethod', selectedPayment);
+            sessionStorage.setItem('checkoutPaymentDetails', JSON.stringify(paymentDetails));
+            sessionStorage.setItem('checkoutTimestamp', Date.now().toString());
+            
+            // Calculate and save totals
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += (item.price || 69.99);
+            });
+            const tax = subtotal * 0.18;
+            const total = subtotal + tax;
+            sessionStorage.setItem('checkoutSubtotal', subtotal.toFixed(2));
+            sessionStorage.setItem('checkoutTax', tax.toFixed(2));
+            sessionStorage.setItem('checkoutTotal', total.toFixed(2));
+            
+            console.log('Saved to sessionStorage - Cart:', cart);
+            console.log('Total amount:', total.toFixed(2));
+
             // Simulate payment processing
             const checkoutBtn = document.querySelector('.checkout-btn');
             const originalText = checkoutBtn.innerHTML;
@@ -665,23 +857,33 @@
             checkoutBtn.disabled = true;
 
             setTimeout(() => {
-                // Clear cart after successful purchase
-                localStorage.removeItem('cart');
-                
-                // Show success message
-                showNotification('Payment successful! Check your email for course access.');
-                
-                // Redirect to success page or reload
+                showNotification('Payment successful! Redirecting...', 'success');
                 setTimeout(() => {
                     window.location.href = 'payment-success.html';
-                }, 2000);
+                }, 1500);
                 
                 checkoutBtn.innerHTML = originalText;
                 checkoutBtn.disabled = false;
             }, 2000);
         }
 
-        // Show notification
+        function removeFromCart(courseId) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart = cart.filter(item => item.id !== courseId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showNotification('Course removed from cart');
+            loadCart();
+        }
+
+        function applyPromo() {
+            const promoCode = document.getElementById('promoCode').value;
+            if (promoCode.toUpperCase() === 'SAVE20') {
+                showNotification('Promo code applied! 20% discount', 'success');
+            } else {
+                showNotification('Invalid promo code', 'error');
+            }
+        }
+
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = 'notification';
@@ -689,28 +891,21 @@
                 <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
                 <span>${message}</span>
             `;
-            
-            if (type === 'error') {
-                notification.style.background = '#ef4444';
-            }
-            
+            if (type === 'error') notification.style.background = '#ef4444';
             document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+            setTimeout(() => notification.remove(), 3000);
         }
 
-        // Update cart count in navbar
-        function updateCartCount() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const cartCountElements = document.querySelectorAll('#cartCount');
-            cartCountElements.forEach(el => {
-                if (el) el.textContent = cart.length;
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
             });
         }
 
-        // Load cart on page load
         document.addEventListener('DOMContentLoaded', loadCart);
     </script>
 </body>
